@@ -20,7 +20,6 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#E8F5F2] px-4 sm:px-6 relative overflow-hidden">
-      {/* ELEMEN DEKORATIF LATAR BELAKANG (BIAR LAYAR BESAR TIDAK KOSONG) */}
       <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-[#6FA8A1]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-[#85C1C9]/10 rounded-full blur-3xl pointer-events-none" />
 

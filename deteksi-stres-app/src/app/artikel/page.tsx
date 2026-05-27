@@ -10,25 +10,21 @@ export default function ArticlesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // State untuk mengontrol kemunculan skeleton loading
   const [pageLoading, setPageLoading] = useState(true);
 
-  // Efek simulasi memuat data untuk mengaktifkan skeleton loading secara halus
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 600); // 600 milidetik
+    }, 600);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Mendapatkan daftar kategori unik dari data json artikel Anda
   const categories = useMemo(() => {
     const allCats = articles.map((a) => a.category);
     return ["Semua", ...Array.from(new Set(allCats))];
   }, []);
 
-  // Filter logika pencarian dan kategori secara real-time
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
       const matchesSearch =
@@ -44,7 +40,6 @@ export default function ArticlesPage() {
     });
   }, [searchQuery, selectedCategory]);
 
-  // JIKA PAGE LOADING AKTIF: Tampilkan kerangka skeleton loading di dalam layout utama
   if (pageLoading) {
     return (
       <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -54,7 +49,6 @@ export default function ArticlesPage() {
     );
   }
 
-  // JIKA LOADING SELESAI: Render halaman utama artikel secara utuh
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
       <Sidebar />
@@ -181,7 +175,6 @@ export default function ArticlesPage() {
             ))}
           </div>
         ) : (
-          /* STATE JIKA PENCARIAN KOSONG */
           <div className="text-center py-16 bg-white border border-dashed border-gray-200 rounded-3xl">
             <LayoutGrid className="w-10 h-10 text-gray-300 mx-auto mb-3" />
             <h3 className="text-base font-bold text-gray-700">

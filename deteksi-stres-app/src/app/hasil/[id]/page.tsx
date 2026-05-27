@@ -71,7 +71,6 @@ export default function HasilPage() {
   const label = result?.level;
   const answers = result?.answers || [];
 
-  // Konfigurasi Tema Warna Berdasarkan Level Stres (UI/UX Refinement)
   const theme = useMemo(() => {
     if (label === "Rendah") {
       return {
@@ -127,7 +126,6 @@ export default function HasilPage() {
     <div className="flex min-h-screen bg-[#F8FAFC]">
       <Sidebar />
 
-      {/* Padding top 20 untuk mengantisipasi tombol menu mobile agar tidak tumpang tindih */}
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-4xl mx-auto w-full space-y-6 overflow-y-auto">
         
         {/* TOP BAR / NAVIGATION BACK */}
@@ -167,7 +165,6 @@ export default function HasilPage() {
           <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
         </div>
 
-        {/* RELEVANT SUGGESTION CARD (KONTEN TAMBAHAN RELEVAN UNTUK UX) */}
         <div className={`border rounded-2xl p-5 ${theme.cardBg} flex items-start gap-4`}>
           <HeartPulse className={`w-6 h-6 shrink-0 mt-0.5 ${theme.text}`} />
           <div className="space-y-1">

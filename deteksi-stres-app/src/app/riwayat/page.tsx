@@ -71,7 +71,6 @@ export default function RiwayatPage() {
     setCurrentPage(1);
   }, [activeFilter, sortBy]);
 
-  // SINKRONISASI WARNA INDIKATOR DENGAN DASHBOARD
   const getColor = (level: string) => {
     if (level === "Rendah") return "bg-emerald-500";
     if (level === "Sedang") return "bg-amber-500";
@@ -109,27 +108,26 @@ export default function RiwayatPage() {
       <Sidebar />
 
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-[1400px] mx-auto w-full space-y-8 overflow-y-auto">
-        
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#2C3E50] tracking-tight">
               Riwayat Kuisioner
             </h1>
             <p className="text-gray-500 mt-1">
-              Pantau fluktuasi kondisi psikologis Anda secara berkala untuk menjaga stabilitas pikiran.
+              Pantau fluktuasi kondisi psikologis Anda secara berkala untuk
+              menjaga stabilitas pikiran.
             </p>
           </div>
         </div>
 
-        {/* SUMMARY CARD FILTERS */}
         <div className="grid sm:grid-cols-3 gap-5">
           <button
             onClick={() => toggleFilter("Rendah")}
             className={`group rounded-2xl p-5 bg-white border transition-all duration-200 text-left flex items-center justify-between shadow-2xs cursor-pointer
-              ${activeFilter === "Rendah"
-                ? "border-emerald-500 ring-4 ring-emerald-50/70"
-                : "border-gray-100 hover:border-emerald-200 hover:shadow-xs"
+              ${
+                activeFilter === "Rendah"
+                  ? "border-emerald-500 ring-4 ring-emerald-50/70"
+                  : "border-gray-100 hover:border-emerald-200 hover:shadow-xs"
               }
             `}
           >
@@ -137,20 +135,27 @@ export default function RiwayatPage() {
               <div className="p-2.5 bg-emerald-50 rounded-xl text-emerald-500 w-fit">
                 <Smile className="w-6 h-6" />
               </div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Level Rendah</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Level Rendah
+              </p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">{countLevel("Rendah")}</span>
-              <span className="text-[10px] font-semibold text-gray-400">Total</span>
+              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">
+                {countLevel("Rendah")}
+              </span>
+              <span className="text-[10px] font-semibold text-gray-400">
+                Total
+              </span>
             </div>
           </button>
 
           <button
             onClick={() => toggleFilter("Sedang")}
             className={`group rounded-2xl p-5 bg-white border transition-all duration-200 text-left flex items-center justify-between shadow-2xs cursor-pointer
-              ${activeFilter === "Sedang"
-                ? "border-amber-500 ring-4 ring-amber-50/70"
-                : "border-gray-100 hover:border-amber-200 hover:shadow-xs"
+              ${
+                activeFilter === "Sedang"
+                  ? "border-amber-500 ring-4 ring-amber-50/70"
+                  : "border-gray-100 hover:border-amber-200 hover:shadow-xs"
               }
             `}
           >
@@ -158,20 +163,27 @@ export default function RiwayatPage() {
               <div className="p-2.5 bg-amber-50 rounded-xl text-amber-500 w-fit">
                 <Meh className="w-6 h-6" />
               </div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Level Sedang</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Level Sedang
+              </p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">{countLevel("Sedang")}</span>
-              <span className="text-[10px] font-semibold text-gray-400">Total</span>
+              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">
+                {countLevel("Sedang")}
+              </span>
+              <span className="text-[10px] font-semibold text-gray-400">
+                Total
+              </span>
             </div>
           </button>
 
           <button
             onClick={() => toggleFilter("Tinggi")}
             className={`group rounded-2xl p-5 bg-white border transition-all duration-200 text-left flex items-center justify-between shadow-2xs cursor-pointer
-              ${activeFilter === "Tinggi"
-                ? "border-rose-500 ring-4 ring-rose-50/70"
-                : "border-gray-100 hover:border-rose-200 hover:shadow-xs"
+              ${
+                activeFilter === "Tinggi"
+                  ? "border-rose-500 ring-4 ring-rose-50/70"
+                  : "border-gray-100 hover:border-rose-200 hover:shadow-xs"
               }
             `}
           >
@@ -179,22 +191,28 @@ export default function RiwayatPage() {
               <div className="p-2.5 bg-rose-50 rounded-xl text-rose-500 w-fit">
                 <Frown className="w-6 h-6" />
               </div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Level Tinggi</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Level Tinggi
+              </p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">{countLevel("Tinggi")}</span>
-              <span className="text-[10px] font-semibold text-gray-400">Total</span>
+              <span className="text-3xl font-black text-gray-800 block group-hover:scale-105 transition-transform">
+                {countLevel("Tinggi")}
+              </span>
+              <span className="text-[10px] font-semibold text-gray-400">
+                Total
+              </span>
             </div>
           </button>
         </div>
 
-        {/* DATA TABLE AREA */}
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xs space-y-5">
-          
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#6FA8A1]" />
-              <h2 className="text-lg font-bold text-[#2C3E50]">Daftar Riwayat Kuisioner</h2>
+              <h2 className="text-lg font-bold text-[#2C3E50]">
+                Daftar Riwayat Kuisioner
+              </h2>
             </div>
 
             <div className="relative w-fit">
@@ -213,19 +231,19 @@ export default function RiwayatPage() {
             </div>
           </div>
 
-          {/* TABLE COMPONENT */}
           <div className="overflow-x-auto">
             <div className="min-w-[700px] space-y-3">
-              
-              {/* TABLE HEADER */}
               <div className="grid grid-cols-4 text-[11px] font-bold text-gray-400 px-3 tracking-widest uppercase border-b border-gray-100 pb-2.5">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Tanggal Tes</span>
-                <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Waktu</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" /> Tanggal Tes
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" /> Waktu
+                </span>
                 <span>Tingkat Stres</span>
                 <span className="text-right">Aksi</span>
               </div>
 
-              {/* ROWS DATA */}
               {currentData.length > 0 ? (
                 currentData.map((item: any) => (
                   <div
@@ -233,20 +251,26 @@ export default function RiwayatPage() {
                     className="grid grid-cols-4 items-center bg-white border border-gray-100 hover:border-[#6FA8A1]/30 hover:bg-slate-50/40 px-3 py-3.5 rounded-2xl transition duration-150"
                   >
                     <span className="font-semibold text-gray-800 text-sm">
-                      {new Date(item.createdAt).toLocaleDateString("id-ID", { dateStyle: "medium" })}
+                      {new Date(item.createdAt).toLocaleDateString("id-ID", {
+                        dateStyle: "medium",
+                      })}
                     </span>
 
                     <span className="text-gray-500 text-sm font-medium">
                       {new Date(item.createdAt).toLocaleTimeString("id-ID", {
                         hour: "2-digit",
                         minute: "2-digit",
-                      })}{" "}WIB
+                      })}{" "}
+                      WIB
                     </span>
 
-                    {/* DOCK SINKRONISASI TAMPILAN SESUAI HALAMAN DASHBOARD */}
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-2.5 h-2.5 rounded-full ${getColor(item.level)}`} />
-                      <span className="font-medium text-gray-700">{item.level}</span>
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full ${getColor(item.level)}`}
+                      />
+                      <span className="font-medium text-gray-700">
+                        {item.level}
+                      </span>
                     </div>
 
                     <div className="text-right">
@@ -254,7 +278,8 @@ export default function RiwayatPage() {
                         onClick={() => router.push(`/hasil/${item.id}`)}
                         className="inline-flex items-center gap-1 text-xs font-bold text-[#6FA8A1] border border-[#6FA8A1]/20 hover:bg-[#6FA8A1] hover:text-white px-3 py-2 rounded-xl transition cursor-pointer"
                       >
-                        Lihat Detail<ArrowUpRight className="w-3.5 h-3.5" />
+                        Lihat Detail
+                        <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -267,10 +292,11 @@ export default function RiwayatPage() {
             </div>
           </div>
 
-          {/* TABLE FOOTER & PAGINATION */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-3 border-t border-gray-100 text-xs font-bold text-gray-400">
             <span>
-              MENAMPILKAN {totalItems === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, totalItems)} DARI {totalItems} RIWAYAT KUISIONER
+              MENAMPILKAN {totalItems === 0 ? 0 : startIndex + 1} -{" "}
+              {Math.min(endIndex, totalItems)} DARI {totalItems} RIWAYAT
+              KUISIONER
             </span>
 
             {totalPages > 1 && (
@@ -288,9 +314,10 @@ export default function RiwayatPage() {
                     key={page}
                     onClick={() => setCurrentPage(page)}
                     className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition duration-150 cursor-pointer
-                      ${currentPage === page
-                        ? "bg-[#6FA8A1] text-white shadow-xs"
-                        : "bg-white border border-gray-200 text-gray-600 hover:bg-slate-50"
+                      ${
+                        currentPage === page
+                          ? "bg-[#6FA8A1] text-white shadow-xs"
+                          : "bg-white border border-gray-200 text-gray-600 hover:bg-slate-50"
                       }
                     `}
                   >
@@ -299,7 +326,9 @@ export default function RiwayatPage() {
                 ))}
 
                 <button
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                   className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-slate-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-gray-600"
                 >
@@ -308,7 +337,6 @@ export default function RiwayatPage() {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
