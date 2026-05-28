@@ -53,7 +53,6 @@ export default function ArticlesPage() {
     <div className="flex min-h-screen bg-[#F8FAFC]">
       <Sidebar />
 
-      {/* pt-20 ditambahkan agar layout aman di layar HP dan tidak tertutup tombol menu laci */}
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-[1400px] mx-auto w-full space-y-8 overflow-y-auto">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-6 gap-4">
@@ -143,7 +142,6 @@ export default function ArticlesPage() {
                       {article.summary}
                     </p>
 
-                    {/* Pembatas halus */}
                     <div className="w-full border-b border-gray-100 pt-1" />
 
                     {/* Uraian Edukasi (Content) */}

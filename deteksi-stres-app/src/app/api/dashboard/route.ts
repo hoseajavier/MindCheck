@@ -11,7 +11,6 @@ export async function GET() {
 
   const userId = session.user.id;
 
-  // 1. Ambil semua data TestResult untuk kalkulasi statistik kuisioner stres
   const tests = await prisma.testResult.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -19,10 +18,10 @@ export async function GET() {
 
   const lastTest = tests[0] || null;
 
-  // 2. Dapatkan string tanggal hari ini dalam format lokal Indonesia (YYYY-MM-DD)
-  const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
+  const todayStr = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Asia/Jakarta",
+  });
 
-  // 3. Cek apakah user sudah mengisi mood khusus untuk tanggal hari ini
   const todayMoodEntry = await prisma.dailyMood.findUnique({
     where: {
       userId_date: {
@@ -32,7 +31,6 @@ export async function GET() {
     },
   });
 
-  // 4. Ambil maksimal 7 data mood terbaru untuk kebutuhan grafik batang di dashboard
   const moodHistory = await prisma.dailyMood.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
@@ -40,14 +38,12 @@ export async function GET() {
   });
 
   return Response.json({
-    // Data Kuisioner Stres (Tetap dipertahankan)
     totalTest: tests.length,
     lastTest,
-    history: tests.slice(0, 3), // Menampilkan 3 riwayat kuisioner teratas di tabel
+    history: tests.slice(0, 3),
 
-    // Data Tambahan Baru untuk Mood Tracker
     hasFilledMoodToday: !!todayMoodEntry,
     todayMood: todayMoodEntry ? todayMoodEntry.mood : null,
-    moodHistory: moodHistory.reverse(), // Dibalik agar urutan grafik dari kiri (lampau) ke kanan (terbaru)
+    moodHistory: moodHistory.reverse(),
   });
 }

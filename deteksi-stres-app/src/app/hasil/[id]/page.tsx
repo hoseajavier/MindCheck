@@ -4,7 +4,17 @@ import Sidebar from "@/components/Sidebar";
 import { useParams, useRouter } from "next/navigation";
 import SkeletonLoading from "@/components/SkeletonLoading";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, AlertCircle, ArrowLeft, CheckCircle2, HeartPulse, Activity } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  HeartPulse,
+  Activity,
+  BarChart3,
+  Sliders,
+} from "lucide-react";
 
 export default function HasilPage() {
   const params = useParams();
@@ -71,6 +81,82 @@ export default function HasilPage() {
   const label = result?.level;
   const answers = result?.answers || [];
 
+  const biometricsCalculated = useMemo(() => {
+    if (answers.length === 0) return [];
+
+    const avg = (start: number, end: number) => {
+      const slice = answers.slice(start, end);
+      return slice.reduce((a: number, b: number) => a + b, 0) / slice.length;
+    };
+
+    return [
+      {
+        name: "Snoring Rate (Dengkur)",
+        value: (45 + avg(0, 3) * 13.75).toFixed(1),
+        unit: "dB",
+        min: 45,
+        max: 100,
+        desc: "Intensitas getaran suara pernapasan saat tertidur malam.",
+      },
+      {
+        name: "Respiration Rate (Napas)",
+        value: (16 + avg(3, 6) * 3.5).toFixed(1),
+        unit: "pm",
+        min: 16,
+        max: 30,
+        desc: "Frekuensi siklus pernapasan dada per menit saat kondisi rileks.",
+      },
+      {
+        name: "Body Temperature (Suhu)",
+        value: (85 + avg(6, 9) * 3.5).toFixed(1),
+        unit: "°F",
+        min: 85,
+        max: 99,
+        desc: "Fluktuasi suhu tubuh internal basal yang dipengaruhi metabolisme stres.",
+      },
+      {
+        name: "Limb Movement (Gerak Tubuh)",
+        value: (4 + avg(9, 12) * 3.75).toFixed(1),
+        unit: "skor",
+        min: 4,
+        max: 19,
+        desc: "Tingkat motorik keaktifan getaran tangan/kaki sewaktu tidur gelisah.",
+      },
+      {
+        name: "Blood Oxygen (Kadar Oksigen)",
+        value: (97 - avg(12, 15) * 3.75).toFixed(1),
+        unit: "%",
+        min: 82,
+        max: 97,
+        desc: "Saturasi konsentrasi oksigen murni (SpO2) di dalam aliran pembuluh darah.",
+      },
+      {
+        name: "Eye Movement (Gerak Mata)",
+        value: (60 + avg(15, 18) * 11).toFixed(1),
+        unit: "skor",
+        min: 60,
+        max: 105,
+        desc: "Aktivitas kecepatan fase tidur REM (Rapid Eye Movement).",
+      },
+      {
+        name: "Sleeping Hours (Durasi Tidur)",
+        value: (9 - avg(18, 21) * 2.25).toFixed(1),
+        unit: "jam",
+        min: 0,
+        max: 9,
+        desc: "Kuantitas akumulasi waktu tidur malam efektif Anda.",
+      },
+      {
+        name: "Heart Rate (Detak Jantung)",
+        value: (50 + avg(21, 24) * 8.75).toFixed(1),
+        unit: "bpm",
+        min: 50,
+        max: 85,
+        desc: "Ritme konstan detak jantung per menit (Resting Heart Rate).",
+      },
+    ];
+  }, [answers]);
+
   const theme = useMemo(() => {
     if (label === "Rendah") {
       return {
@@ -79,7 +165,7 @@ export default function HasilPage() {
         text: "text-emerald-800",
         badge: "bg-emerald-100 text-emerald-800",
         emoji: "😊",
-        desc: "Luar biasa! Kondisi psikologis Anda saat ini berada dalam zona stabil dan relaks. Tetap pertahankan rutinitas istirahat dan pola hidup sehat Anda saat ini."
+        desc: "Luar biasa! Kondisi psikologis Anda saat ini berada dalam zona stabil dan relaks. Tetap pertahankan rutinitas istirahat dan pola hidup sehat Anda saat ini.",
       };
     }
     if (label === "Sedang") {
@@ -89,7 +175,7 @@ export default function HasilPage() {
         text: "text-amber-800",
         badge: "bg-amber-100 text-amber-800",
         emoji: "😐",
-        desc: "Tubuh Anda mulai mendeteksi adanya tekanan kognitif dan kelelahan fisik. Sangat disarankan untuk mengambil jeda istirahat sejenak dan mengurangi beban aktivitas harian Anda."
+        desc: "Tubuh Anda mulai mendeteksi adanya tekanan kognitif dan kelelahan fisik. Sangat disarankan untuk mengambil jeda istirahat sejenak dan mengurangi beban aktivitas harian Anda.",
       };
     }
     return {
@@ -98,18 +184,34 @@ export default function HasilPage() {
       text: "text-rose-800",
       badge: "bg-rose-100 text-rose-800",
       emoji: "😟",
-      desc: "Tingkat stres Anda tergolong tinggi. Tubuh Anda sedang memberikan sinyal kelelahan ekstrem atau kecemasan yang kuat. Jangan ragu untuk berbagi cerita atau berkonsultasi dengan profesional jika dirasa semakin membebani."
+      desc: "Tingkat stres Anda tergolong tinggi. Tubuh Anda sedang memberikan sinyal kelelahan ekstrem atau kecemasan yang kuat. Jangan ragu untuk berbagi cerita atau berkonsultasi dengan profesional jika dirasa semakin membebani.",
     };
   }, [label]);
 
   const importantFactors = useMemo(() => {
     const findings = [];
-    if (answers[1] >= 3) findings.push("Pola pernapasan yang cepat atau tidak teratur cukup sering terjadi.");
-    if (answers[4] >= 3) findings.push("Terdapat indikasi tubuh sering merasa kekurangan oksigen.");
-    if (answers[5] >= 3 || answers[6] >= 3 || answers[9] >= 3) findings.push("Kualitas dan durasi tidur menunjukkan adanya gangguan istirahat.");
-    if (answers[7] >= 3) findings.push("Detak jantung cepat saat istirahat menjadi salah satu indikator.");
-    if (answers[11] >= 3 || answers[12] >= 3 || answers[15] >= 3) findings.push("Tingkat kecemasan dan ketegangan emosional terlihat cukup tinggi.");
-    if (answers[13] >= 3 || answers[21] >= 3) findings.push("Tubuh menunjukkan tanda kelelahan dan kurang energi.");
+    if (answers[1] >= 3)
+      findings.push(
+        "Pola pernapasan yang cepat atau tidak teratur cukup sering terjadi.",
+      );
+    if (answers[4] >= 3)
+      findings.push(
+        "Terdapat indikasi tubuh sering merasa kekurangan oksigen.",
+      );
+    if (answers[5] >= 3 || answers[6] >= 3 || answers[9] >= 3)
+      findings.push(
+        "Kualitas dan durasi tidur menunjukkan adanya gangguan istirahat.",
+      );
+    if (answers[7] >= 3)
+      findings.push(
+        "Detak jantung cepat saat istirahat menjadi salah satu indikator.",
+      );
+    if (answers[11] >= 3 || answers[12] >= 3 || answers[15] >= 3)
+      findings.push(
+        "Tingkat kecemasan dan ketegangan emosional terlihat cukup tinggi.",
+      );
+    if (answers[13] >= 3 || answers[21] >= 3)
+      findings.push("Tubuh menunjukkan tanda kelelahan dan kurang energi.");
     return findings;
   }, [answers]);
 
@@ -127,7 +229,6 @@ export default function HasilPage() {
       <Sidebar />
 
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-4xl mx-auto w-full space-y-6 overflow-y-auto">
-        
         {/* TOP BAR / NAVIGATION BACK */}
         <div className="flex items-center justify-between">
           <button
@@ -149,9 +250,13 @@ export default function HasilPage() {
         </div>
 
         {/* MAIN VISUAL RESULT CARD */}
-        <div className={`${theme.bg} rounded-3xl p-6 md:p-8 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6`}>
+        <div
+          className={`${theme.bg} rounded-3xl p-6 md:p-8 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6`}
+        >
           <div className="space-y-3 text-center md:text-left z-10 max-w-xl">
-            <p className="text-white/80 text-xs font-bold uppercase tracking-widest">Tingkat Stres Terdeteksi</p>
+            <p className="text-white/80 text-xs font-bold uppercase tracking-widest">
+              Tingkat Stres Terdeteksi
+            </p>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight flex items-center justify-center md:justify-start gap-3">
               <span>{theme.emoji}</span> {label}
             </h2>
@@ -159,21 +264,104 @@ export default function HasilPage() {
               {theme.desc}
             </p>
             <div className="text-white/60 text-xs font-mono pt-2">
-              Waktu Pemeriksaan: {new Date(result.createdAt).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" })} WIB
+              Waktu Pemeriksaan:{" "}
+              {new Date(result.createdAt).toLocaleString("id-ID", {
+                dateStyle: "long",
+                timeStyle: "short",
+              })}{" "}
+              WIB
             </div>
           </div>
           <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
         </div>
 
-        <div className={`border rounded-2xl p-5 ${theme.cardBg} flex items-start gap-4`}>
+        {/* REKOMENDASI TINDAKAN */}
+        <div
+          className={`border rounded-2xl p-5 ${theme.cardBg} flex items-start gap-4`}
+        >
           <HeartPulse className={`w-6 h-6 shrink-0 mt-0.5 ${theme.text}`} />
           <div className="space-y-1">
-            <h4 className={`font-bold text-sm ${theme.text}`}>Rekomendasi Tindakan</h4>
+            <h4 className={`font-bold text-sm ${theme.text}`}>
+              Rekomendasi Penanganan Klinis
+            </h4>
             <p className="text-xs text-gray-600 leading-relaxed">
-              {label === "Rendah" && "Pertahankan ritme harianmu. Coba lakukan jalan santai sore atau meditasi ringan 5 menit untuk menjaga kesegaran endorfin tubuh."}
-              {label === "Sedang" && "Ambil jeda istirahat kerja selama 15-30 menit ke depan. Lakukan peregangan leher, minumlah segelas air putih hangat, dan hindari paparan layar gawai (screen time) sebelum tidur malam ini."}
-              {label === "Tinggi" && "Sangat disarankan melakukan teknik pernapasan kotak (box breathing) saat ini: Tarik napas 4 detik, tahan 4 detik, embuskan 4 detik, tahan 4 detik. Lakukan 5 kali pengulangan untuk menurunkan kecemasan organ jantung."}
+              {label === "Rendah" &&
+                "Pertahankan ritme harianmu. Coba lakukan jalan santai sore atau meditasi ringan 5 menit untuk menjaga kesegaran endorfin tubuh."}
+              {label === "Sedang" &&
+                "Ambil jeda istirahat kerja selama 15-30 menit ke depan. Lakukan peregangan leher, minumlah segelas air putih hangat, dan hindari paparan layar gawai (screen time) sebelum tidur malam ini."}
+              {label === "Tinggi" &&
+                "Sangat disarankan melakukan teknik pernapasan kotak (box breathing) saat ini: Tarik napas 4 detik, tahan 4 detik, embuskan 4 detik, tahan 4 detik. Lakukan 5 kali pengulangan untuk menurunkan kecemasan organ jantung."}
             </p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xs border border-gray-100 p-5 md:p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-[#6FA8A1]" />
+            <div>
+              <h3 className="font-bold text-base md:text-lg text-[#2C3E50]">
+                Parameter Indikator Biometrik
+              </h3>
+              <p className="text-xs text-gray-400">
+                Nilai variabel yang diekstrak dan dikonversi dari jawaban
+                kuesioner Anda menuju model prediksi.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {biometricsCalculated.map((bio, index) => {
+              const currentVal = parseFloat(bio.value);
+              const percentage = Math.min(
+                Math.max(
+                  ((currentVal - bio.min) / (bio.max - bio.min)) * 100,
+                  0,
+                ),
+                100,
+              );
+
+              const isOxygenAnomalous =
+                bio.name.includes("Oxygen") && currentVal < 90;
+              const isSleepAnomalous =
+                bio.name.includes("Sleeping") && currentVal < 6;
+              const isGeneralAnomalous =
+                !bio.name.includes("Oxygen") &&
+                !bio.name.includes("Sleeping") &&
+                percentage > 65;
+              const isWarning =
+                isOxygenAnomalous || isSleepAnomalous || isGeneralAnomalous;
+
+              return (
+                <div
+                  key={index}
+                  className="bg-slate-50/60 p-4 rounded-xl border border-slate-100/80 flex flex-col justify-between space-y-2"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-700">
+                        {bio.name}
+                      </h4>
+                      <p className="text-[10px] text-gray-400 font-medium leading-tight mt-0.5">
+                        {bio.desc}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-sm font-black tracking-tight shrink-0 px-2 py-0.5 rounded-md ${isWarning ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-[#4A7c75]"}`}
+                    >
+                      {bio.value}{" "}
+                      <span className="text-[10px] font-bold">{bio.unit}</span>
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${isWarning ? "bg-rose-500" : "bg-[#6FA8A1]"}`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -190,21 +378,26 @@ export default function HasilPage() {
               </h3>
             </div>
             <div className="p-1 bg-slate-100 rounded-lg text-gray-500">
-              {openDetail ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {openDetail ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </div>
           </button>
 
           {openDetail && (
             <div className="p-5 md:p-6 border-t border-gray-100 bg-slate-50/50 space-y-6">
-              
               {/* INFLUENTIAL FACTORS */}
               <div className="space-y-3">
                 <h4 className="font-bold text-sm text-gray-700 flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-amber-500" /> Indikator Faktor yang Paling Dominan
+                  <AlertCircle className="w-4 h-4 text-amber-500" /> Indikator
+                  Faktor yang Paling Dominan
                 </h4>
                 {importantFactors.length === 0 ? (
                   <p className="text-xs text-gray-400 italic bg-white p-4 rounded-xl border border-dashed text-center">
-                    Tidak ditemukan anomali atau indikator gejala fisik ekstrem pada jawaban Anda.
+                    Tidak ditemukan anomali atau indikator gejala fisik ekstrem
+                    pada jawaban Anda.
                   </p>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-3">
@@ -223,22 +416,30 @@ export default function HasilPage() {
 
               {/* ALL QUESTIONS AND ANSWERS LOG */}
               <div className="space-y-3">
-                <h4 className="font-bold text-sm text-gray-700">Daftar Rekaman Jawaban Lengkap</h4>
+                <h4 className="font-bold text-sm text-gray-700">
+                  Daftar Rekaman Jawaban Lengkap
+                </h4>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 border border-gray-200/60 rounded-xl bg-white p-3 shadow-2xs">
                   {questions.map((question, index) => {
                     const score = answers[index];
                     return (
-                      <div 
-                        key={index} 
+                      <div
+                        key={index}
                         className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-50 last:border-0 py-3 px-2 gap-2 text-xs md:text-sm"
                       >
                         <div className="space-y-1">
-                          <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wide">Soal {index + 1}</span>
-                          <p className="font-medium text-gray-700">{question}</p>
+                          <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wide">
+                            Soal {index + 1}
+                          </span>
+                          <p className="font-medium text-gray-700">
+                            {question}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2 md:self-center">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold shrink-0
-                            ${score >= 3 ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-100 text-gray-600"}`}>
+                          <span
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold shrink-0
+                            ${score >= 3 ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-100 text-gray-600"}`}
+                          >
                             {answerLabels[score] || "-"}
                           </span>
                         </div>
