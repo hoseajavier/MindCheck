@@ -5,7 +5,6 @@ import uvicorn
 import os
 import joblib
 import pandas as pd
-import numpy as np
 
 app = FastAPI()
 
@@ -17,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Memuat file pkl model Random Forest
 model = joblib.load("stress_detection_random_forest.pkl")
 
 features = [
@@ -48,22 +48,22 @@ label_map = {
 
 @app.get("/")
 def root():
-    return {"message": "Stress Detection API Running"}
+    return {"status": "success", "message": "Stress Detection API Running Successfully"}
     
 @app.post("/predict")
 def predict(data: StressInput):
     try:
         values_dict = data.dict()
         values = pd.DataFrame([values_dict])
-        values = values[features] 
- 
+        values = values[features]
+     
         prediction_raw = model.predict(values)[0]
+        prediction = int(prediction_raw)
         probabilities_raw = model.predict_proba(values)[0]
 
-        prediction = int(prediction_raw)
-        prob_rendah = round(float(probabilities_raw[0]) * 100, 2) if len(probabilities_raw) > 0 else 0.0
-        prob_sedang = round(float(probabilities_raw[1]) * 100, 2) if len(probabilities_raw) > 1 else 0.0
-        prob_tinggi = round(float(probabilities_raw[2]) * 100, 2) if len(probabilities_raw) > 2 else 0.0
+        prob_rendah = round(float(probabilities_raw[0]) * 100, 2)
+        prob_sedang = round(float(probabilities_raw[1]) * 100, 2)
+        prob_tinggi = round(float(probabilities_raw[2]) * 100, 2)
 
         return {
             "prediction": prediction,
@@ -76,10 +76,10 @@ def predict(data: StressInput):
         }
 
     except Exception as e:
-        print("Eror Sistem Prediksi Python:", str(e))
+        print("Eror Runtime Python Terjadi:", str(e))
         raise HTTPException(
             status_code=500,
-            detail=f"Gagal memproses kalkulasi model: {str(e)}"
+            detail=str(e)
         )
         
 if __name__ == "__main__":
