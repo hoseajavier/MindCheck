@@ -81,6 +81,57 @@ export default function HasilPage() {
   const label = result?.level;
   const answers = result?.answers || [];
 
+  const featureImportances = [
+    {
+      name: "Gerak Mata (REM)",
+      key: "eye_movement",
+      weight: 16.92,
+      desc: "Aktivitas fase tidur REM",
+    },
+    {
+      name: "Frekuensi Napas",
+      key: "respiration_rate",
+      weight: 14.15,
+      desc: "Siklus pernapasan dada per menit",
+    },
+    {
+      name: "Detak Jantung",
+      key: "heart_rate",
+      weight: 13.54,
+      desc: "Ritme konstan detak jantung istirahat",
+    },
+    {
+      name: "Tingkat Dengkuran",
+      key: "snoring_rate",
+      weight: 13.35,
+      desc: "Intensitas getaran suara pernapasan",
+    },
+    {
+      name: "Suhu Tubuh",
+      key: "body_temperature",
+      weight: 11.85,
+      desc: "Fluktuasi suhu internal basal",
+    },
+    {
+      name: "Kadar Oksigen",
+      key: "blood_oxygen",
+      weight: 11.45,
+      desc: "Saturasi oksigen dalam darah (SpO2)",
+    },
+    {
+      name: "Gerak Tubuh",
+      key: "limb_movement",
+      weight: 10.96,
+      desc: "Keaktifan motorik tangan dan kaki",
+    },
+    {
+      name: "Durasi Tidur",
+      key: "sleeping_hours",
+      weight: 7.78,
+      desc: "Kuantitas waktu tidur malam efektif",
+    },
+  ];
+
   const biometricsCalculated = useMemo(() => {
     if (answers.length === 0) return [];
 
@@ -92,6 +143,7 @@ export default function HasilPage() {
     return [
       {
         name: "Snoring Rate (Dengkur)",
+        key: "snoring_rate",
         value: (45 + avg(0, 3) * 13.75).toFixed(1),
         unit: "dB",
         min: 45,
@@ -100,6 +152,7 @@ export default function HasilPage() {
       },
       {
         name: "Respiration Rate (Napas)",
+        key: "respiration_rate",
         value: (16 + avg(3, 6) * 3.5).toFixed(1),
         unit: "pm",
         min: 16,
@@ -108,6 +161,7 @@ export default function HasilPage() {
       },
       {
         name: "Body Temperature (Suhu)",
+        key: "body_temperature",
         value: (85 + avg(6, 9) * 3.5).toFixed(1),
         unit: "°F",
         min: 85,
@@ -116,6 +170,7 @@ export default function HasilPage() {
       },
       {
         name: "Limb Movement (Gerak Tubuh)",
+        key: "limb_movement",
         value: (4 + avg(9, 12) * 3.75).toFixed(1),
         unit: "skor",
         min: 4,
@@ -124,6 +179,7 @@ export default function HasilPage() {
       },
       {
         name: "Blood Oxygen (Kadar Oksigen)",
+        key: "blood_oxygen",
         value: (97 - avg(12, 15) * 3.75).toFixed(1),
         unit: "%",
         min: 82,
@@ -132,6 +188,7 @@ export default function HasilPage() {
       },
       {
         name: "Eye Movement (Gerak Mata)",
+        key: "eye_movement",
         value: (60 + avg(15, 18) * 11).toFixed(1),
         unit: "skor",
         min: 60,
@@ -140,6 +197,7 @@ export default function HasilPage() {
       },
       {
         name: "Sleeping Hours (Durasi Tidur)",
+        key: "sleeping_hours",
         value: (9 - avg(18, 21) * 2.25).toFixed(1),
         unit: "jam",
         min: 0,
@@ -148,6 +206,7 @@ export default function HasilPage() {
       },
       {
         name: "Heart Rate (Detak Jantung)",
+        key: "heart_rate",
         value: (50 + avg(21, 24) * 8.75).toFixed(1),
         unit: "bpm",
         min: 50,
@@ -229,7 +288,6 @@ export default function HasilPage() {
       <Sidebar />
 
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-4xl mx-auto w-full space-y-6 overflow-y-auto">
-        {/* TOP BAR / NAVIGATION BACK */}
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.push("/dashboard")}
@@ -239,7 +297,6 @@ export default function HasilPage() {
           </button>
         </div>
 
-        {/* HEADER */}
         <div className="text-center md:text-left border-b border-gray-100 pb-4">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#E2F2F0] text-[#4A7c75] rounded-full text-xs font-bold tracking-wider uppercase">
             <Activity className="w-3.5 h-3.5" /> Hasil Analisis Prediksi
@@ -249,7 +306,6 @@ export default function HasilPage() {
           </h1>
         </div>
 
-        {/* MAIN VISUAL RESULT CARD */}
         <div
           className={`${theme.bg} rounded-3xl p-6 md:p-8 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6`}
         >
@@ -275,7 +331,6 @@ export default function HasilPage() {
           <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
         </div>
 
-        {/* REKOMENDASI TINDAKAN */}
         <div
           className={`border rounded-2xl p-5 ${theme.cardBg} flex items-start gap-4`}
         >
@@ -295,77 +350,119 @@ export default function HasilPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xs border border-gray-100 p-5 md:p-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#6FA8A1]" />
-            <div>
-              <h3 className="font-bold text-base md:text-lg text-[#2C3E50]">
-                Parameter Indikator Biometrik
-              </h3>
-              <p className="text-xs text-gray-400">
-                Nilai variabel yang diekstrak dan dikonversi dari jawaban
-                kuesioner Anda menuju model prediksi.
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 bg-white rounded-3xl shadow-xs border border-gray-100 p-5 md:p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-[#6FA8A1]" />
+              <div>
+                <h3 className="font-bold text-base text-[#2C3E50]">
+                  Parameter Indikator Biometrik
+                </h3>
+                <p className="text-[11px] text-gray-400">
+                  Nilai variabel hasil ekstraksi dari jawaban kuisioner Anda.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {biometricsCalculated.map((bio, index) => {
+                const currentVal = parseFloat(bio.value);
+                const percentage = Math.min(
+                  Math.max(
+                    ((currentVal - bio.min) / (bio.max - bio.min)) * 100,
+                    0,
+                  ),
+                  100,
+                );
+
+                const isOxygenAnomalous =
+                  bio.name.includes("Oxygen") && currentVal < 90;
+                const isSleepAnomalous =
+                  bio.name.includes("Sleeping") && currentVal < 6;
+                const isGeneralAnomalous =
+                  !bio.name.includes("Oxygen") &&
+                  !bio.name.includes("Sleeping") &&
+                  percentage > 65;
+                const isWarning =
+                  isOxygenAnomalous || isSleepAnomalous || isGeneralAnomalous;
+
+                return (
+                  <div
+                    key={index}
+                    className="bg-slate-50/60 p-3.5 rounded-xl border border-slate-100/80 flex flex-col justify-between space-y-2"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-xs font-bold text-gray-700">
+                          {bio.name}
+                        </h4>
+                        <p className="text-[10px] text-gray-400 font-medium leading-tight mt-0.5">
+                          {bio.desc}
+                        </p>
+                      </div>
+                      <span
+                        className={`text-xs font-black tracking-tight shrink-0 px-2 py-0.5 rounded-md ${isWarning ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-[#4A7c75]"}`}
+                      >
+                        {bio.value}{" "}
+                        <span className="text-[9px] font-bold">{bio.unit}</span>
+                      </span>
+                    </div>
+
+                    <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${isWarning ? "bg-rose-500" : "bg-[#6FA8A1]"}`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {biometricsCalculated.map((bio, index) => {
-              const currentVal = parseFloat(bio.value);
-              const percentage = Math.min(
-                Math.max(
-                  ((currentVal - bio.min) / (bio.max - bio.min)) * 100,
-                  0,
-                ),
-                100,
-              );
+          <div className="bg-white rounded-3xl shadow-xs border border-gray-100 p-5 md:p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Sliders className="w-5 h-5 text-[#6FA8A1]" />
+              <div>
+                <h3 className="font-bold text-base text-[#2C3E50]">
+                  Bobot Kontribusi Fitur
+                </h3>
+                <p className="text-[11px] text-gray-400">
+                  Tingkat pengaruh indikator terhadap akurasi Random Forest.
+                </p>
+              </div>
+            </div>
 
-              const isOxygenAnomalous =
-                bio.name.includes("Oxygen") && currentVal < 90;
-              const isSleepAnomalous =
-                bio.name.includes("Sleeping") && currentVal < 6;
-              const isGeneralAnomalous =
-                !bio.name.includes("Oxygen") &&
-                !bio.name.includes("Sleeping") &&
-                percentage > 65;
-              const isWarning =
-                isOxygenAnomalous || isSleepAnomalous || isGeneralAnomalous;
-
-              return (
-                <div
-                  key={index}
-                  className="bg-slate-50/60 p-4 rounded-xl border border-slate-100/80 flex flex-col justify-between space-y-2"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="text-xs font-bold text-gray-700">
-                        {bio.name}
-                      </h4>
-                      <p className="text-[10px] text-gray-400 font-medium leading-tight mt-0.5">
-                        {bio.desc}
-                      </p>
+            <div className="space-y-3 pt-1">
+              {featureImportances.map((feat, index) => {
+                return (
+                  <div key={index} className="space-y-1">
+                    <div className="flex justify-between items-center text-xs">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-gray-700 flex items-center gap-1">
+                          {feat.name}
+                        </span>
+                        <span className="text-[9px] text-gray-400 font-medium">
+                          {feat.desc}
+                        </span>
+                      </div>
+                      <span className="font-mono font-bold text-gray-500 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">
+                        {feat.weight}%
+                      </span>
                     </div>
-                    <span
-                      className={`text-sm font-black tracking-tight shrink-0 px-2 py-0.5 rounded-md ${isWarning ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-[#4A7c75]"}`}
-                    >
-                      {bio.value}{" "}
-                      <span className="text-[10px] font-bold">{bio.unit}</span>
-                    </span>
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden relative">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 bg-slate-400/80`}
+                        style={{ width: `${(feat.weight / 17) * 100}%` }}
+                      />
+                    </div>
                   </div>
-
-                  <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${isWarning ? "bg-rose-500" : "bg-[#6FA8A1]"}`}
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* DETAIL EXPANDABLE ACCORDION */}
         <div className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
           <button
             onClick={() => setOpenDetail(!openDetail)}
@@ -388,7 +485,6 @@ export default function HasilPage() {
 
           {openDetail && (
             <div className="p-5 md:p-6 border-t border-gray-100 bg-slate-50/50 space-y-6">
-              {/* INFLUENTIAL FACTORS */}
               <div className="space-y-3">
                 <h4 className="font-bold text-sm text-gray-700 flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-amber-500" /> Indikator
@@ -414,7 +510,6 @@ export default function HasilPage() {
                 )}
               </div>
 
-              {/* ALL QUESTIONS AND ANSWERS LOG */}
               <div className="space-y-3">
                 <h4 className="font-bold text-sm text-gray-700">
                   Daftar Rekaman Jawaban Lengkap
