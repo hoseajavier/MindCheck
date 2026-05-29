@@ -33,7 +33,13 @@ const questions = [
   "Seberapa sering Anda merasa cemas tanpa sebab yang jelas?",
 ];
 
-const options = ["Tidak Pernah", "Jarang", "Kadang-kadang", "Sering", "Sangat Sering"];
+const options = [
+  "Tidak Pernah",
+  "Jarang",
+  "Kadang-kadang",
+  "Sering",
+  "Sangat Sering",
+];
 
 export default function KuisionerPage() {
   const router = useRouter();
@@ -99,7 +105,7 @@ export default function KuisionerPage() {
       setSubmitLoading(true);
       const payload = mapToModelInput();
 
-      const res = await fetch("http://127.0.0.1:8000/predict", {
+      const res = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -146,20 +152,26 @@ export default function KuisionerPage() {
             Kuisioner Deteksi Tingkat Stres
           </h1>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 leading-relaxed">
-            Isilah kuisioner berikut sesuai dengan kondisi objektif Anda belakangan ini.
+            Isilah kuisioner berikut sesuai dengan kondisi objektif Anda
+            belakangan ini.
           </p>
         </div>
 
         {/* PROGRESS BAR */}
         <div className="bg-white rounded-2xl p-4 shadow-2xs border border-gray-100">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-400">Progres Pengisian</span>
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-400">
+              Progres Pengisian
+            </span>
             <span className="text-xs sm:text-sm font-bold text-[#6FA8A1] bg-[#E2F2F0] px-2.5 py-0.5 rounded-full">
               {current + 1} / {total} Soal
             </span>
           </div>
           <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-            <div className="bg-[#6FA8A1] h-full rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
+            <div
+              className="bg-[#6FA8A1] h-full rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
 
@@ -168,7 +180,9 @@ export default function KuisionerPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-1.5 text-[#6FA8A1]">
               <HelpCircle className="w-4 h-4 shrink-0" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Pertanyaan Ke-{current + 1}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                Pertanyaan Ke-{current + 1}
+              </span>
             </div>
             <h2 className="text-base sm:text-lg md:text-xl font-bold text-[#2C3E50] leading-relaxed">
               {questions[current]}
@@ -186,14 +200,27 @@ export default function KuisionerPage() {
                     ${isChecked ? "bg-[#E2F2F0] border-[#6FA8A1] text-[#244b46] ring-1 ring-[#6FA8A1]" : "bg-white border-gray-200/80 hover:border-gray-300 hover:bg-slate-50 text-gray-700"}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all shrink-0
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all shrink-0
                       ${isChecked ? "border-[#6FA8A1] bg-[#6FA8A1] text-white" : "border-gray-300 bg-white group-hover:border-gray-400"}`}
                     >
-                      {isChecked && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                      {isChecked && (
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      )}
                     </div>
-                    <span className={`text-xs sm:text-sm md:text-base ${isChecked ? "font-bold" : "font-medium"}`}>{opt}</span>
+                    <span
+                      className={`text-xs sm:text-sm md:text-base ${isChecked ? "font-bold" : "font-medium"}`}
+                    >
+                      {opt}
+                    </span>
                   </div>
-                  <input type="radio" name={`question-${current}`} checked={isChecked} onChange={() => handleSelect(i)} className="sr-only" />
+                  <input
+                    type="radio"
+                    name={`question-${current}`}
+                    checked={isChecked}
+                    onChange={() => handleSelect(i)}
+                    className="sr-only"
+                  />
                 </label>
               );
             })}
@@ -216,7 +243,13 @@ export default function KuisionerPage() {
               className={`flex items-center gap-1 px-5 py-2.5 text-white font-bold text-xs rounded-xl transition-all shadow-3xs shrink-0
                 ${answers[current] === undefined ? "bg-[#6FA8A1]/40 cursor-not-allowed" : "bg-[#6FA8A1] hover:bg-[#598F88] hover:shadow-xs cursor-pointer active:scale-95"}`}
             >
-              {current === total - 1 ? <>Kalkulasi &gt;</> : <>Lanjut <ChevronRight className="w-4 h-4" /></>}
+              {current === total - 1 ? (
+                <>Kalkulasi &gt;</>
+              ) : (
+                <>
+                  Lanjut <ChevronRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
         </div>
