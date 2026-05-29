@@ -61,9 +61,9 @@ def predict(data: StressInput):
         probabilities_raw = model.predict_proba(values)[0]
 
         prediction = int(prediction_raw)
-        prob_rendah = round(float(probabilities_raw[0]) * 100, 2)
-        prob_sedang = round(float(probabilities_raw[1]) * 100, 2)
-        prob_tinggi = round(float(probabilities_raw[2]) * 100, 2)
+        prob_rendah = round(float(probabilities_raw[0]) * 100, 2) if len(probabilities_raw) > 0 else 0.0
+        prob_sedang = round(float(probabilities_raw[1]) * 100, 2) if len(probabilities_raw) > 1 else 0.0
+        prob_tinggi = round(float(probabilities_raw[2]) * 100, 2) if len(probabilities_raw) > 2 else 0.0
 
         return {
             "prediction": prediction,
