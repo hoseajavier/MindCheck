@@ -111,22 +111,34 @@ export default function KuisionerPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Gagal prediksi");
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Gagal memproses prediksi model AI: ${errorText}`);
+      }
+
       const data = await res.json();
+
       const score = answers.reduce((a, b) => a + b, 0);
 
       const saveRes = await fetch("/api/test-result", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ score, level: data.label, answers }),
+        body: JSON.stringify({
+          score,
+          level: data.label,
+          answers,
+        }),
       });
 
-      if (!saveRes.ok) throw new Error("Gagal menyimpan");
+      if (!saveRes.ok)
+        throw new Error("Gagal menyimpan kuesioner ke database");
+
       const savedData = await saveRes.json();
+
       router.push(`/hasil/${savedData.id}`);
-    } catch (err) {
-      console.error(err);
-      alert("Gagal menyimpan hasil");
+    } catch (err: any) {
+      console.error("Terjadi kegagalan alur kuesioner:", err);
+      alert(err.message || "Gagal mengalkulasi atau menyimpan hasil tes");
     } finally {
       setSubmitLoading(false);
     }
