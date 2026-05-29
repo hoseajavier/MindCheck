@@ -59,36 +59,28 @@ def root():
     
 @app.post("/predict")
 def predict(data: StressInput):
-
     try:
-
         values_dict = data.dict()
 
-        values = pd.DataFrame(
-            [[values_dict[f] for f in features]],
-            columns=features
-        )
-
+        values = pd.DataFrame([values_dict])
+        
+        values = values[features]
+     
         prediction = model.predict(values)[0]
-
         probabilities = model.predict_proba(values)[0]
 
         return {
-
             "prediction": int(prediction),
-
             "label": label_map[int(prediction)],
-
             "probabilities": {
                 "rendah": round(probabilities[0] * 100, 2),
                 "sedang": round(probabilities[1] * 100, 2),
                 "tinggi": round(probabilities[2] * 100, 2),
             }
-
         }
 
     except Exception as e:
-
+        print("Eror Prediksi Python:", str(e))
         raise HTTPException(
             status_code=500,
             detail=str(e)
