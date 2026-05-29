@@ -3,10 +3,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
-
 import joblib
-import numpy as np
 import pandas as pd
+import numpy as np
 
 app = FastAPI()
 
@@ -18,9 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = joblib.load(
-    "stress_detection_random_forest.pkl"
-)
+model = joblib.load("stress_detection_random_forest.pkl")
 
 features = [
     "snoring_rate",
@@ -34,7 +31,6 @@ features = [
 ]
 
 class StressInput(BaseModel):
-
     snoring_rate: float
     respiration_rate: float
     body_temperature: float
@@ -52,38 +48,38 @@ label_map = {
 
 @app.get("/")
 def root():
-
-    return {
-        "message": "Stress Detection API Running"
-    }
+    return {"message": "Stress Detection API Running"}
     
 @app.post("/predict")
 def predict(data: StressInput):
     try:
         values_dict = data.dict()
-
         values = pd.DataFrame([values_dict])
-        
-        values = values[features]
-     
-        prediction = model.predict(values)[0]
-        probabilities = model.predict_proba(values)[0]
+        values = values[features] 
+ 
+        prediction_raw = model.predict(values)[0]
+        probabilities_raw = model.predict_proba(values)[0]
+
+        prediction = int(prediction_raw)
+        prob_rendah = round(float(probabilities_raw[0]) * 100, 2)
+        prob_sedang = round(float(probabilities_raw[1]) * 100, 2)
+        prob_tinggi = round(float(probabilities_raw[2]) * 100, 2)
 
         return {
-            "prediction": int(prediction),
-            "label": label_map[int(prediction)],
+            "prediction": prediction,
+            "label": label_map.get(prediction, "Sedang"),
             "probabilities": {
-                "rendah": round(probabilities[0] * 100, 2),
-                "sedang": round(probabilities[1] * 100, 2),
-                "tinggi": round(probabilities[2] * 100, 2),
+                "rendah": prob_rendah,
+                "sedang": prob_sedang,
+                "tinggi": prob_tinggi
             }
         }
 
     except Exception as e:
-        print("Eror Prediksi Python:", str(e))
+        print("Eror Sistem Prediksi Python:", str(e))
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail=f"Gagal memproses kalkulasi model: {str(e)}"
         )
         
 if __name__ == "__main__":
