@@ -140,6 +140,9 @@ export default function HasilPage() {
       return slice.reduce((a: number, b: number) => a + b, 0) / slice.length;
     };
 
+    const fahrenheitVal = 85 + avg(6, 9) * 3.5;
+    const celsiusVal = ((fahrenheitVal - 32) * 5) / 9;
+
     return [
       {
         name: "Snoring Rate (Dengkur)",
@@ -162,10 +165,10 @@ export default function HasilPage() {
       {
         name: "Body Temperature (Suhu)",
         key: "body_temperature",
-        value: (85 + avg(6, 9) * 3.5).toFixed(1),
-        unit: "°F",
-        min: 85,
-        max: 99,
+        value: celsiusVal.toFixed(1),
+        unit: "°C",
+        min: 29.4,
+        max: 37.2,
         desc: "Fluktuasi suhu tubuh internal basal yang dipengaruhi metabolisme stres.",
       },
       {
