@@ -50,25 +50,27 @@ export default function DeployModelPage() {
     <div className="flex min-h-screen bg-[#F8FAFC]">
       <Toaster richColors /> <Sidebar />
       <div className="flex-1 p-4 md:p-10">
-        <h1 className="text-3xl font-extrabold text-[#2C3E50] mb-2">
-          Model Deployment
-        </h1>
-        <p className="text-slate-500 mb-8">
-          Kelola dan deploy file model untuk fitur prediksi stres.
-        </p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-extrabold text-[#2C3E50] mb-2">
+            Model Deployment
+          </h1>
+          <p className="text-slate-500 mb-8">
+            Kelola dan deploy file model untuk fitur prediksi stres.
+          </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-6">
-            <div className="p-4 bg-indigo-50 text-indigo-600 rounded-3xl">
-              <Brain size={32} />
-            </div>
-            <div>
-              <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">
-                Model Aktif Saat Ini
-              </p>
-              <p className="text-xl font-bold text-slate-800 truncate">
-                {modelInfo.modelName}
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-6">
+              <div className="p-4 bg-indigo-50 text-indigo-600 rounded-3xl">
+                <Brain size={32} />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400 font-medium uppercase tracking-wider">
+                  Model Aktif Saat Ini
+                </p>
+                <p className="text-xl font-bold text-slate-800 truncate">
+                  {modelInfo.modelName}
+                </p>
+              </div>
             </div>
           </div>
         </div>

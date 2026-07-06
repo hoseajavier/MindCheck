@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   const formData = await req.formData();
 
-  const res = await fetch("http://127.0.0.1:8000/upload-model", {
+  const res = await fetch(`${process.env.RAILWAY_API_URL}/upload-model`, {
     method: "POST",
     body: formData,
   });
