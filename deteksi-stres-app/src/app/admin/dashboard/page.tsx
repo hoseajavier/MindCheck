@@ -2,6 +2,8 @@ import Sidebar from "@/components/Sidebar";
 import { Users, Activity, ClipboardList } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 async function getAdminData() {
   const users = await prisma.user.findMany({
     where: {
