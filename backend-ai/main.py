@@ -1,12 +1,17 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 import joblib
 import pandas as pd
+import shutil
 
 app = FastAPI()
+
+MODEL_DIR = "models"
+if not os.path.exists(MODEL_DIR):
+    os.makedirs(MODEL_DIR)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,9 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Memuat file pkl model Random Forest
-model = joblib.load("stress_detection_random_forest.pkl")
 
 features = [
     "snoring_rate",
@@ -46,12 +48,25 @@ label_map = {
     2: "Tinggi"
 }
 
-@app.get("/")
-def root():
-    return {"status": "success", "message": "Stress Detection API Running Successfully"}
-    
+def get_latest_model():
+    files = [os.path.join(MODEL_DIR, f) for f in os.listdir(MODEL_DIR) if f.endswith('.pkl')]
+    if not files:
+        return None
+    latest_file = max(files, key=os.path.getctime)
+    return joblib.load(latest_file)
+
+@app.post("/upload-model")
+async def upload_model(file: UploadFile = File(...)):
+    file_path = os.path.join(MODEL_DIR, file.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"message": "Model berhasil dideploy", "filename": file.filename}
+
 @app.post("/predict")
 def predict(data: StressInput):
+    model = get_latest_model()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model tidak ditemukan")
     try:
         values_dict = data.dict()
         values = pd.DataFrame([values_dict])

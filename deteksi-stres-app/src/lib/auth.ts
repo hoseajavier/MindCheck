@@ -27,12 +27,15 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
       }
 
-      if (token?.email) {
+      if (token.email) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
+          where: {
+            email: token.email,
+          },
         });
 
         if (dbUser) {
+          token.role = dbUser.role;
           token.displayName = dbUser.displayName ?? undefined;
         }
       }
@@ -43,8 +46,10 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.displayName = token.displayName ?? undefined;
+        session.user.role = token.role as string;
+        session.user.displayName = token.displayName as string;
       }
+
       return session;
     },
   },

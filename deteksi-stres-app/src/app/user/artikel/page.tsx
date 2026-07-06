@@ -54,7 +54,6 @@ export default function ArticlesPage() {
       <Sidebar />
 
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-[1400px] mx-auto w-full space-y-8 overflow-y-auto">
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-6 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#2C3E50] tracking-tight flex items-center gap-2">
@@ -67,9 +66,7 @@ export default function ArticlesPage() {
           </div>
         </div>
 
-        {/* CONTROLS: SEARCH BAR & KATEGORI FILTER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
-          {/* Input Search */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -81,7 +78,6 @@ export default function ArticlesPage() {
             />
           </div>
 
-          {/* Navigasi Kategori Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
             {categories.map((cat) => {
               const isActive =
@@ -107,7 +103,6 @@ export default function ArticlesPage() {
           </div>
         </div>
 
-        {/* ARTICLES GRID LAYOUT */}
         {filteredArticles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             {filteredArticles.map((article) => (
@@ -116,7 +111,6 @@ export default function ArticlesPage() {
                 className="group bg-white rounded-3xl border border-gray-100 shadow-2xs overflow-hidden hover:shadow-md hover:border-gray-200/60 transition-all duration-300 flex flex-col justify-between h-full"
               >
                 <div>
-                  {/* IMAGE WITH ZOOM HOVER EFFECT */}
                   <div className="relative w-full h-52 overflow-hidden bg-slate-100">
                     <div className="w-full h-56 bg-gray-100 flex items-center justify-center overflow-hidden">
                       <img
@@ -125,33 +119,29 @@ export default function ArticlesPage() {
                         className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                     </div>
-                    {/* Floating Category Badge */}
+
                     <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-[#4A7c75] text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-2xs border border-white/50">
                       {article.category}
                     </span>
                   </div>
 
-                  {/* CORE TEXT CONTENT */}
                   <div className="p-6 space-y-4">
                     <h2 className="text-xl font-bold text-[#2C3E50] leading-snug group-hover:text-[#6FA8A1] transition-colors duration-200">
                       {article.title}
                     </h2>
 
-                    {/* Ringkasan Utama (Summary) */}
                     <p className="text-sm text-gray-600 leading-relaxed font-medium">
                       {article.summary}
                     </p>
 
                     <div className="w-full border-b border-gray-100 pt-1" />
 
-                    {/* Uraian Edukasi (Content) */}
                     <p className="text-xs text-gray-500 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100/60">
                       {article.content}
                     </p>
                   </div>
                 </div>
 
-                {/* CARD FOOTER INFORMATION */}
                 <div className="px-6 pb-6 pt-3 flex items-center justify-between border-t border-gray-50 mt-auto">
                   <span className="text-xs font-semibold text-gray-400">
                     Via:{" "}

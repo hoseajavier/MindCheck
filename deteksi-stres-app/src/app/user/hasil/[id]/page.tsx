@@ -23,15 +23,22 @@ export default function HasilPage() {
 
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<any>(null);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [openDetail, setOpenDetail] = useState(false);
 
   useEffect(() => {
-    const fetchResult = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch(`/api/test-result/${id}`);
-        if (!res.ok) throw new Error("Failed fetch");
-        const data = await res.json();
-        setResult(data);
+        setLoading(true);
+        const [res, qRes] = await Promise.all([
+          fetch(`/api/test-result/${id}`),
+          fetch("/api/pertanyaan"),
+        ]);
+
+        if (!res.ok || !qRes.ok) throw new Error("Gagal mengambil data");
+
+        setResult(await res.json());
+        setQuestions(await qRes.json());
       } catch (error) {
         console.error(error);
       } finally {
@@ -39,36 +46,8 @@ export default function HasilPage() {
       }
     };
 
-    if (!id) return;
-    fetchResult();
+    if (id) fetchData();
   }, [id]);
-
-  const questions = [
-    "Seberapa sering Anda mendengkur saat tidur?",
-    "Seberapa sering napas Anda terasa cepat saat istirahat?",
-    "Seberapa sering suhu tubuh terasa lebih panas?",
-    "Seberapa sering tubuh Anda bergerak saat tidur?",
-    "Seberapa sering Anda merasa kekurangan oksigen?",
-    "Seberapa sering tidur Anda tidak nyenyak?",
-    "Seberapa sering Anda tidur kurang dari 7 jam?",
-    "Seberapa sering detak jantung terasa cepat?",
-    "Seberapa sering Anda merasa lelah saat bangun?",
-    "Seberapa sering Anda sulit tidur?",
-    "Seberapa sering Anda terbangun di malam hari?",
-    "Seberapa sering Anda merasa gelisah?",
-    "Seberapa sering Anda merasa cemas tanpa sebab?",
-    "Seberapa sering Anda merasa kelelahan sepanjang hari?",
-    "Seberapa sering Anda sulit fokus?",
-    "Seberapa sering Anda merasa tegang?",
-    "Seberapa sering Anda merasa tekanan kerja tinggi?",
-    "Seberapa sering Anda merasa tidak rileks?",
-    "Seberapa sering Anda merasa terburu-buru?",
-    "Seberapa sering Anda mengalami sakit kepala?",
-    "Seberapa sering Anda merasa emosional?",
-    "Seberapa sering Anda merasa tidak berenergi?",
-    "Seberapa sering Anda merasa terganggu saat tidur?",
-    "Seberapa sering Anda merasa tubuh tidak nyaman?",
-  ];
 
   const answerLabels = [
     "Tidak Pernah",
@@ -133,91 +112,101 @@ export default function HasilPage() {
   ];
 
   const biometricsCalculated = useMemo(() => {
-    if (answers.length === 0) return [];
+    if (answers.length === 0 || questions.length === 0) return [];
 
-    const avg = (start: number, end: number) => {
-      const slice = answers.slice(start, end);
-      return slice.reduce((a: number, b: number) => a + b, 0) / slice.length;
-    };
+    const groups: Record<string, number[]> = {};
+    questions.forEach((q, index) => {
+      if (!groups[q.category]) groups[q.category] = [];
+      groups[q.category].push(answers[index] || 0);
+    });
 
-    const fahrenheitVal = 85 + avg(6, 9) * 3.5;
-    const celsiusVal = ((fahrenheitVal - 32) * 5) / 9;
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
-    return [
+    const featureConfigs = [
       {
-        name: "Snoring Rate (Dengkur)",
-        key: "snoring_rate",
-        value: (45 + avg(0, 3) * 13.75).toFixed(1),
-        unit: "dB",
+        key: "SNORING_RATE",
+        name: "Dengkuran",
         min: 45,
         max: 100,
-        desc: "Intensitas getaran suara pernapasan saat tertidur malam.",
+        unit: "dB",
+        inverse: false,
       },
       {
-        name: "Respiration Rate (Napas)",
-        key: "respiration_rate",
-        value: (16 + avg(3, 6) * 3.5).toFixed(1),
-        unit: "pm",
+        key: "RESPIRATION_RATE",
+        name: "Frekuensi Napas",
         min: 16,
         max: 30,
-        desc: "Frekuensi siklus pernapasan dada per menit saat kondisi rileks.",
+        unit: "pm",
+        inverse: false,
       },
       {
-        name: "Body Temperature (Suhu)",
-        key: "body_temperature",
-        value: celsiusVal.toFixed(1),
+        key: "BODY_TEMPERATURE",
+        name: "Suhu Tubuh",
+        min: 36,
+        max: 38,
         unit: "°C",
-        min: 29.4,
-        max: 37.2,
-        desc: "Fluktuasi suhu tubuh internal basal yang dipengaruhi metabolisme stres.",
+        inverse: false,
       },
       {
-        name: "Limb Movement (Gerak Tubuh)",
-        key: "limb_movement",
-        value: (4 + avg(9, 12) * 3.75).toFixed(1),
-        unit: "skor",
+        key: "LIMB_MOVEMENT",
+        name: "Gerak Tubuh",
         min: 4,
         max: 19,
-        desc: "Tingkat motorik keaktifan getaran tangan/kaki sewaktu tidur gelisah.",
+        unit: "skor",
+        inverse: false,
       },
       {
-        name: "Blood Oxygen (Kadar Oksigen)",
-        key: "blood_oxygen",
-        value: (97 - avg(12, 15) * 3.75).toFixed(1),
-        unit: "%",
+        key: "BLOOD_OXYGEN",
+        name: "Kadar Oksigen",
         min: 82,
         max: 97,
-        desc: "Saturasi konsentrasi oksigen murni (SpO2) di dalam aliran pembuluh darah.",
+        unit: "%",
+        inverse: true,
       },
       {
-        name: "Eye Movement (Gerak Mata)",
-        key: "eye_movement",
-        value: (60 + avg(15, 18) * 11).toFixed(1),
-        unit: "skor",
+        key: "EYE_MOVEMENT",
+        name: "Gerak Mata",
         min: 60,
         max: 105,
-        desc: "Aktivitas kecepatan fase tidur REM (Rapid Eye Movement).",
+        unit: "skor",
+        inverse: false,
       },
       {
-        name: "Sleeping Hours (Durasi Tidur)",
-        key: "sleeping_hours",
-        value: (9 - avg(18, 21) * 2.25).toFixed(1),
-        unit: "jam",
+        key: "SLEEPING_HOURS",
+        name: "Durasi Tidur",
         min: 0,
         max: 9,
-        desc: "Kuantitas akumulasi waktu tidur malam efektif Anda.",
+        unit: "jam",
+        inverse: true,
       },
       {
-        name: "Heart Rate (Detak Jantung)",
-        key: "heart_rate",
-        value: (50 + avg(21, 24) * 8.75).toFixed(1),
-        unit: "bpm",
+        key: "HEART_RATE",
+        name: "Detak Jantung",
         min: 50,
         max: 85,
-        desc: "Ritme konstan detak jantung per menit (Resting Heart Rate).",
+        unit: "bpm",
+        inverse: false,
       },
     ];
-  }, [answers]);
+
+    return featureConfigs.map((cfg) => {
+      const val = avg(groups[cfg.key] || [0]);
+      const range = cfg.max - cfg.min;
+      const calculated = cfg.inverse
+        ? cfg.max - (val / 4) * range
+        : cfg.min + (val / 4) * range;
+
+      return {
+        name: cfg.name,
+        value: calculated.toFixed(1),
+        unit: cfg.unit,
+        min: cfg.min,
+        max: cfg.max,
+        inverse: cfg.inverse,
+        desc: `Analisis parameter ${cfg.name}`,
+      };
+    });
+  }, [answers, questions]);
 
   const theme = useMemo(() => {
     if (label === "Rendah") {
@@ -293,7 +282,7 @@ export default function HasilPage() {
       <div className="flex-1 p-5 md:p-10 pt-20 md:pt-10 max-w-4xl mx-auto w-full space-y-6 overflow-y-auto">
         <div className="flex items-center justify-between">
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/user/dashboard")}
             className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-[#6FA8A1] transition cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Kembali ke Dashboard
@@ -370,51 +359,53 @@ export default function HasilPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {biometricsCalculated.map((bio, index) => {
                 const currentVal = parseFloat(bio.value);
-                const percentage = Math.min(
-                  Math.max(
-                    ((currentVal - bio.min) / (bio.max - bio.min)) * 100,
-                    0,
-                  ),
+
+                const rawPercentage =
+                  ((currentVal - bio.min) / (bio.max - bio.min)) * 100;
+
+                const percentage = bio.inverse
+                  ? 100 - rawPercentage
+                  : rawPercentage;
+                const boundedPercentage = Math.min(
+                  Math.max(percentage, 0),
                   100,
                 );
 
-                const isOxygenAnomalous =
-                  bio.name.includes("Oxygen") && currentVal < 90;
-                const isSleepAnomalous =
-                  bio.name.includes("Sleeping") && currentVal < 6;
-                const isGeneralAnomalous =
-                  !bio.name.includes("Oxygen") &&
-                  !bio.name.includes("Sleeping") &&
-                  percentage > 65;
-                const isWarning =
-                  isOxygenAnomalous || isSleepAnomalous || isGeneralAnomalous;
+                const isWarning = boundedPercentage > 65;
 
                 return (
                   <div
                     key={index}
-                    className="bg-slate-50/60 p-3.5 rounded-xl border border-slate-100/80 flex flex-col justify-between space-y-2"
+                    className="bg-white p-3.5 rounded-xl border border-slate-100 flex flex-col justify-between space-y-2 shadow-sm"
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-xs font-bold text-gray-700">
+                    <div className="flex justify-between items-center gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-gray-700 truncate">
                           {bio.name}
                         </h4>
-                        <p className="text-[10px] text-gray-400 font-medium leading-tight mt-0.5">
+                        <p className="text-[10px] text-gray-400 truncate">
                           {bio.desc}
                         </p>
                       </div>
+
                       <span
-                        className={`text-xs font-black tracking-tight shrink-0 px-2 py-0.5 rounded-md ${isWarning ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-[#4A7c75]"}`}
+                        className={`text-xs font-black shrink-0 px-2 py-1 rounded-md flex items-center gap-1 whitespace-nowrap ${
+                          isWarning
+                            ? "bg-rose-50 text-rose-600"
+                            : "bg-emerald-50 text-[#4A7c75]"
+                        }`}
                       >
                         {bio.value}{" "}
                         <span className="text-[9px] font-bold">{bio.unit}</span>
                       </span>
                     </div>
 
-                    <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${isWarning ? "bg-rose-500" : "bg-[#6FA8A1]"}`}
-                        style={{ width: `${percentage}%` }}
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          isWarning ? "bg-rose-500" : "bg-[#6FA8A1]"
+                        }`}
+                        style={{ width: `${boundedPercentage}%` }}
                       />
                     </div>
                   </div>
@@ -518,11 +509,14 @@ export default function HasilPage() {
                   Daftar Rekaman Jawaban Lengkap
                 </h4>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 border border-gray-200/60 rounded-xl bg-white p-3 shadow-2xs">
-                  {questions.map((question, index) => {
+                  {questions.map((q, index) => {
                     const score = answers[index];
+
+                    const questionText = typeof q === "string" ? q : q.question;
+
                     return (
                       <div
-                        key={index}
+                        key={q.id || index}
                         className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-50 last:border-0 py-3 px-2 gap-2 text-xs md:text-sm"
                       >
                         <div className="space-y-1">
@@ -530,15 +524,17 @@ export default function HasilPage() {
                             Soal {index + 1}
                           </span>
                           <p className="font-medium text-gray-700">
-                            {question}
+                            {questionText}
                           </p>
                         </div>
                         <div className="flex items-center gap-2 md:self-center">
                           <span
                             className={`px-2.5 py-1 rounded-full text-xs font-bold shrink-0
-                            ${score >= 3 ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-100 text-gray-600"}`}
+            ${score >= 3 ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-slate-100 text-gray-600"}`}
                           >
-                            {answerLabels[score] || "-"}
+                            {answerLabels[score] !== undefined
+                              ? answerLabels[score]
+                              : "Belum dijawab"}
                           </span>
                         </div>
                       </div>

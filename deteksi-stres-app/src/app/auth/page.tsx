@@ -8,14 +8,18 @@ import GoogleButton from "@/app/auth/GoogleButton";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/dashboard");
+      if (session?.user?.role === "ADMIN") {
+        router.replace("/admin/dashboard");
+      } else {
+        router.replace("/user/dashboard");
+      }
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -32,7 +36,6 @@ export default function AuthPage() {
       <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-[#6FA8A1]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-[#85C1C9]/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* LOGO */}
       <div className="z-10 transform hover:scale-102 transition-transform duration-300">
         <Image
           src="/mindcheck1.png"
@@ -44,7 +47,6 @@ export default function AuthPage() {
         />
       </div>
 
-      {/* CARD LOGIN UTAMA */}
       <div
         className="bg-white/80 backdrop-blur-md w-full max-w-md sm:max-w-lg 
                       rounded-4xl sm:rounded-[40px] 
@@ -52,7 +54,6 @@ export default function AuthPage() {
                       shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60
                       text-center z-10 flex flex-col space-y-6 sm:space-y-8"
       >
-        {/* TITLES & SUBTITLES */}
         <div className="space-y-3">
           <h1
             className="text-2xl sm:text-3xl md:text-4xl 
@@ -75,13 +76,11 @@ export default function AuthPage() {
           </p>
         </div>
 
-        {/* INTERACTION AREA: BUTTON */}
         <div className="space-y-4">
           <div className="w-full flex justify-center">
             <GoogleButton isLoading={isLoading} onClick={handleGoogleLogin} />
           </div>
 
-          {/* FOOTER DISCLAIMER */}
           <p
             className="text-[11px] sm:text-xs 
                         text-gray-400 font-medium 

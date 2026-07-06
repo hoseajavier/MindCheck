@@ -6,33 +6,6 @@ import Sidebar from "@/components/Sidebar";
 import SkeletonLoading from "@/components/SkeletonLoading";
 import { ChevronLeft, ChevronRight, HelpCircle, Check } from "lucide-react";
 
-const questions = [
-  "Seberapa sering Anda mendengkur saat tidur?",
-  "Seberapa sering Anda terbangun karena suara dengkuran sendiri?",
-  "Seberapa sering orang lain mengatakan Anda mendengkur keras?",
-  "Seberapa sering napas Anda terasa cepat saat istirahat?",
-  "Seberapa sering Anda merasa sesak napas ringan?",
-  "Seberapa sering Anda bernapas tidak teratur saat cemas?",
-  "Seberapa sering tubuh Anda terasa lebih panas tanpa aktivitas berat?",
-  "Seberapa sering Anda berkeringat saat merasa stres?",
-  "Seberapa sering tubuh Anda terasa panas saat sulit tidur?",
-  "Seberapa sering tubuh Anda bergerak saat tidur?",
-  "Seberapa sering kaki atau tangan bergerak tanpa sadar saat tidur?",
-  "Seberapa sering Anda merasa gelisah saat beristirahat?",
-  "Seberapa sering Anda merasa kekurangan oksigen?",
-  "Seberapa sering Anda merasa napas terasa pendek saat tidur?",
-  "Seberapa sering Anda merasa pusing setelah bangun tidur?",
-  "Seberapa sering mata terasa sulit rileks saat malam hari?",
-  "Seberapa sering mata Anda terasa lelah akibat kurang tidur?",
-  "Seberapa sering Anda mengalami mimpi berlebihan atau tidur gelisah?",
-  "Seberapa sering Anda tidur kurang dari 7 jam?",
-  "Seberapa sering Anda sulit tidur di malam hari?",
-  "Seberapa sering Anda terbangun di kandungan tengah malam?",
-  "Seberapa sering detak jantung terasa cepat?",
-  "Seberapa sering Anda merasa jantung berdebar saat stres?",
-  "Seberapa sering Anda merasa cemas tanpa sebab yang jelas?",
-];
-
 const options = [
   "Tidak Pernah",
   "Jarang",
@@ -43,16 +16,19 @@ const options = [
 
 export default function KuisionerPage() {
   const router = useRouter();
+  const [questions, setQuestions] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    fetch("/api/pertanyaan")
+      .then((res) => res.json())
+      .then((data) => {
+        setQuestions(data);
+        setPageLoading(false);
+      });
   }, []);
 
   const total = questions.length;
@@ -85,19 +61,22 @@ export default function KuisionerPage() {
     }
   };
 
-  const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
-
   const mapToModelInput = () => {
-    return {
-      snoring_rate: 45 + avg(answers.slice(0, 3)) * 13.75,
-      respiration_rate: 16 + avg(answers.slice(3, 6)) * 3.5,
-      body_temperature: 85 + avg(answers.slice(6, 9)) * 3.5,
-      limb_movement: 4 + avg(answers.slice(9, 12)) * 3.75,
-      blood_oxygen: 97 - avg(answers.slice(12, 15)) * 3.75,
-      eye_movement: 60 + avg(answers.slice(15, 18)) * 11,
-      sleeping_hours: 9 - avg(answers.slice(18, 21)) * 2.25,
-      heart_rate: 50 + avg(answers.slice(21, 24)) * 8.75,
-    };
+    const groups: Record<string, number[]> = {};
+
+    questions.forEach((q, index) => {
+      if (!groups[q.category]) groups[q.category] = [];
+      groups[q.category].push(answers[index] || 0);
+    });
+
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const modelInput: any = {};
+
+    Object.keys(groups).forEach((category) => {
+      modelInput[category] = avg(groups[category]);
+    });
+
+    return modelInput;
   };
 
   const submitAnswers = async () => {
@@ -111,34 +90,29 @@ export default function KuisionerPage() {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Gagal memproses prediksi model AI: ${errorText}`);
-      }
-
       const data = await res.json();
+
+      const label = data.label;
+      if (!label) {
+        throw new Error(
+          "AI gagal memberikan prediksi: " + JSON.stringify(data),
+        );
+      }
 
       const score = answers.reduce((a, b) => a + b, 0);
 
       const saveRes = await fetch("/api/test-result", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          score,
-          level: data.label,
-          answers,
-        }),
+        body: JSON.stringify({ score, level: label, answers }),
       });
 
-      if (!saveRes.ok)
-        throw new Error("Gagal menyimpan kuesioner ke database");
+      if (!saveRes.ok) throw new Error("Gagal menyimpan ke database");
 
       const savedData = await saveRes.json();
-
-      router.push(`/hasil/${savedData.id}`);
+      router.push(`/user/hasil/${savedData.id}`);
     } catch (err: any) {
-      console.error("Terjadi kegagalan alur kuesioner:", err);
-      alert(err.message || "Gagal mengalkulasi atau menyimpan hasil tes");
+      console.error(err);
+      alert(err.message);
     } finally {
       setSubmitLoading(false);
     }
@@ -158,7 +132,6 @@ export default function KuisionerPage() {
       <Sidebar />
 
       <div className="flex-1 p-4 sm:p-6 md:p-10 pt-20 md:pt-10 max-w-4xl mx-auto w-full flex flex-col justify-start gap-4">
-        {/* HEADER */}
         <div className="border-b border-gray-200 pb-4">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#2C3E50] tracking-tight">
             Kuisioner Deteksi Tingkat Stres
@@ -169,7 +142,6 @@ export default function KuisionerPage() {
           </p>
         </div>
 
-        {/* PROGRESS BAR */}
         <div className="bg-white rounded-2xl p-4 shadow-2xs border border-gray-100">
           <div className="flex justify-between items-center mb-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-gray-400">
@@ -187,7 +159,6 @@ export default function KuisionerPage() {
           </div>
         </div>
 
-        {/* MAIN QUESTION CARD */}
         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xs border border-gray-100/80 p-5 sm:p-6 md:p-8 flex-1 flex flex-col justify-between min-h-[380px]">
           <div className="space-y-4">
             <div className="flex items-center gap-1.5 text-[#6FA8A1]">
@@ -197,11 +168,10 @@ export default function KuisionerPage() {
               </span>
             </div>
             <h2 className="text-base sm:text-lg md:text-xl font-bold text-[#2C3E50] leading-relaxed">
-              {questions[current]}
+              {questions[current]?.question || "Memuat pertanyaan..."}
             </h2>
           </div>
 
-          {/* LIKERT OPTIONS GRID */}
           <div className="my-6 space-y-2.5">
             {options.map((opt, i) => {
               const isChecked = answers[current] === i;
@@ -238,7 +208,6 @@ export default function KuisionerPage() {
             })}
           </div>
 
-          {/* NAVIGATION BUTTONS */}
           <div className="flex justify-between items-center border-t border-gray-100 pt-4 mt-auto gap-3">
             <button
               onClick={prev}

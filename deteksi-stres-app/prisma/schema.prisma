@@ -7,20 +7,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id            String       @id @default(cuid())
   name          String?
   email         String       @unique
   emailVerified DateTime?
   image         String?
-  bio           String?
   displayName   String?
+  bio           String?
+
+  role          UserRole     @default(USER)
+
   lastQuizDate  DateTime?
   streak        Int          @default(0)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now()) @updatedAt
+
   accounts      Account[]
   sessions      Session[]
+
   dailyMoods    DailyMood[]
   testResults   TestResult[]
+}
+
+enum QuestionCategory {
+  SNORING_RATE
+  RESPIRATION_RATE
+  BODY_TEMPERATURE
+  LIMB_MOVEMENT
+  BLOOD_OXYGEN
+  EYE_MOVEMENT
+  SLEEPING_HOURS
+  HEART_RATE
+}
+
+model Question {
+  id          String           @id @default(cuid())
+  question    String
+  orderNumber Int              @unique
+  category    QuestionCategory
+  
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model DatasetRecord {
+  id                String @id @default(cuid())
+
+  snoringRate       Float
+  respirationRate   Float
+  bodyTemperature   Float
+  limbMovement      Float
+  bloodOxygen       Float
+  eyeMovement       Float
+  sleepingHours     Float
+  heartRate         Float
+
+  stressLevel       Int
+
+  importedAt        DateTime @default(now())
+}
+
+model ModelMetadata {
+  id           String   @id @default(cuid())
+  modelName    String
+  accuracy     Float
+  updatedAt    DateTime @default(now())
 }
 
 model DailyMood {
@@ -65,6 +124,6 @@ model TestResult {
   score     Int
   level     String
   createdAt DateTime @default(now())
-  answers   Int[]
+  answers   Json
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

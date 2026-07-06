@@ -5,29 +5,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import SkeletonLoading from "@/components/SkeletonLoading";
-import {
-  Calendar,
-  CheckCircle,
-  Lightbulb,
-  Smile,
-  Frown,
-  AlertCircle,
-  BatteryLow,
-  Flame,
-  Heart,
-  Info,
-} from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  BarChart,
-  Bar,
-} from "recharts";
+import { Calendar, CheckCircle, Lightbulb, Smile, Frown, AlertCircle, BatteryLow, Flame, Heart, Info } from "lucide-react";
+import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from "recharts";
 
 export default function DashboardPage() {
   const { data: session } = useSession();
@@ -164,7 +143,6 @@ export default function DashboardPage() {
 
       <div className="flex-1 p-4 sm:p-6 md:p-10 pt-20 md:pt-10 max-w-[1400px] mx-auto w-full space-y-6 md:space-y-8 overflow-y-auto">
         
-        {/* HEADER */}
         <div className="border-b border-gray-200 pb-5">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#2C3E50] tracking-tight">
             Halo, {displayName}!
@@ -174,7 +152,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* DISCLAIMER */}
         <div className="bg-amber-50/80 border border-amber-200/70 rounded-2xl p-4 md:p-5 shadow-2xs">
           <h2 className="font-bold text-amber-800 text-sm flex items-center gap-2 mb-1">
             <Info className="w-4 h-4 text-amber-600 shrink-0" /> Informasi Penting
@@ -184,7 +161,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* HERO BANNER & STATS GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2 bg-linear-to-br from-[#B9E6E1] via-[#CBEFE6] to-[#E3F8F2] rounded-3xl p-5 sm:p-6 md:p-8 flex flex-col justify-between shadow-2xs border border-[#A3D5CF]/30 relative overflow-hidden">
             <div className="space-y-2 md:space-y-3 z-10">
@@ -244,7 +220,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* MOOD TRACKER & TIPS GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-2xs border border-gray-100 flex flex-col justify-between gap-4">
             <div>
@@ -303,7 +278,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* RECHARTS CHARTS GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-3xl shadow-2xs border border-gray-100 p-4 sm:p-6">
             <div className="mb-4">
@@ -358,14 +332,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* LOG RIWAYAT TABLE */}
         <div className="bg-white p-4 sm:p-6 rounded-3xl shadow-2xs border border-gray-100">
           <div className="flex justify-between items-center mb-5 gap-2">
             <div>
               <h3 className="font-bold text-base sm:text-lg text-[#2C3E50]">Riwayat Kuisioner Terbaru</h3>
               <p className="text-xs text-gray-400 mt-0.5">Daftar rekaman riwayat pengerjaan tes.</p>
             </div>
-            <button onClick={() => router.push("/riwayat")} className="text-xs sm:text-sm font-bold text-[#6FA8A1] hover:underline shrink-0 cursor-pointer">
+            <button onClick={() => router.push("/user/riwayat")} className="text-xs sm:text-sm font-bold text-[#6FA8A1] hover:underline shrink-0 cursor-pointer">
               Lihat Semua
             </button>
           </div>
@@ -391,7 +364,7 @@ export default function DashboardPage() {
                       <span className="font-medium text-gray-700">{item.level}</span>
                     </div>
                     <div className="text-right">
-                      <button onClick={() => router.push(`/hasil/${item.id}`)} className="text-[11px] font-bold text-[#6FA8A1] border border-[#6FA8A1]/20 hover:bg-[#6FA8A1] hover:text-white px-2.5 py-1.5 rounded-lg transition cursor-pointer">
+                      <button onClick={() => router.push(`/user/hasil/${item.id}`)} className="text-[11px] font-bold text-[#6FA8A1] border border-[#6FA8A1]/20 hover:bg-[#6FA8A1] hover:text-white px-2.5 py-1.5 rounded-lg transition cursor-pointer">
                         Lihat Detail
                       </button>
                     </div>

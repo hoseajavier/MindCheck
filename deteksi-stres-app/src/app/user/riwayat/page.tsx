@@ -275,7 +275,7 @@ export default function RiwayatPage() {
 
                     <div className="text-right">
                       <button
-                        onClick={() => router.push(`/hasil/${item.id}`)}
+                        onClick={() => router.push(`/user/hasil/${item.id}`)}
                         className="inline-flex items-center gap-1 text-xs font-bold text-[#6FA8A1] border border-[#6FA8A1]/20 hover:bg-[#6FA8A1] hover:text-white px-3 py-2 rounded-xl transition cursor-pointer"
                       >
                         Lihat Detail
