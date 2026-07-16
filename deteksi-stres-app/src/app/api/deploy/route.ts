@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const file = formData.get("file") as File;
   const newMetadata = await prisma.modelMetadata.create({
-    data: { modelName: file.name, accuracy: 0 },
+    data: { modelName: file.name },
   });
 
   return NextResponse.json(newMetadata);

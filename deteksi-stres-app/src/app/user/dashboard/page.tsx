@@ -176,7 +176,7 @@ export default function DashboardPage() {
             </div>
             <div className="mt-5 md:mt-6 z-10">
               <button
-                onClick={() => router.push("/kuisioner")}
+                onClick={() => router.push("/user/kuisioner")}
                 className="w-full sm:w-auto bg-[#6FA8A1] text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#598F88] active:scale-[0.98] transition-all shadow-xs cursor-pointer text-center"
               >
                 Mulai Kuisioner

@@ -78,7 +78,6 @@ model DatasetRecord {
 model ModelMetadata {
   id           String   @id @default(cuid())
   modelName    String
-  accuracy     Float
   updatedAt    DateTime @default(now())
 }
 
