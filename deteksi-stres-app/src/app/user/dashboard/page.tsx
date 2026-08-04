@@ -19,16 +19,15 @@ export default function DashboardPage() {
   const [hasSubmittingMood, setHasSubmittingMood] = useState(false);
 
   const tips = [
-    "Ambil napas dalam selama 5 detik, tahan, dan lepaskan perlahan.",
-    "Luangkan waktu 10 menit untuk berjalan santai di luar ruangan tanpa ponsel.",
-    "Tuliskan 3 hal kecil yang paling kamu syukuri hari ini di selembar kertas.",
-    "Kurangi screen time minimal 30 menit sebelum kamu memejamkan mata untuk tidur.",
-    "Coba meditasi singkat atau mindfulness selama 5 menit untuk menenangkan pikiran.",
-    "Minum segelas air putih hangat dan regangkan otot bahu serta lehermu saat ini.",
-    "Dengarkan satu lagu instrumental favoritmu sambil duduk bersandar dengan rileks.",
-    "Batasi konsumsi kafein berlebih hari ini jika kamu sedang merasa cemas.",
-    "Jangan ragu untuk mengatakan 'tidak' pada hal yang sekiranya membebani kapasitasmu hari ini.",
-    "Istirahatkan matamu dengan metode 20-20-20: setiap 20 menit, tatap objek sejauh 20 kaki selama 20 detik.",
+    "Jagalah kesehatan dengan cara olahraga maupun aktivitas fisik teratur, tidur cukup, makan bergizi seimbang, menerapkan Perilaku Hidup Bersih dan Sehat (PHBS).",
+    "Melakukan kegiatan sesuaikan dengan minat dan kemampuan.",
+    "Berpikir positif dan mengucapkan hal yang positif.",
+    "Menenangkan pikiran dan mengembangkan hobi.",
+    "Bicarakan keluhan dengan seseorang yang dapat dipercaya.",
+    "Kurangi penggunaan perangkat elektronik sebelum tidur untuk membantu menjaga kualitas tidur.",
+    "Jaga pola makan dengan mengonsumsi makanan bergizi seimbang dan minum air yang cukup.",
+    "Atur rutinitas harian dengan memberikan waktu untuk makan, beristirahat, beraktivitas fisik, dan melakukan kegiatan yang menyenangkan.",
+    "Cobalah untuk tidak terlalu lama menyendiri ketika sedang mengalami stres dan tetap terhubung dengan orang-orang yang Anda percaya.",
   ];
 
   const moodOptions = [

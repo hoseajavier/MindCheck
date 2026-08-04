@@ -27,18 +27,10 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
       }
 
-      if (token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: {
-            email: token.email,
-          },
-        });
+      const dbUser = token.email ? await prisma.user.findUnique ({ where: {email: token.email}, select: {role: true, displayName: true}, }) : null;
 
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.displayName = dbUser.displayName ?? undefined;
-        }
-      }
+      token.role = dbUser?.role ?? "USER";
+      token.displayName = dbUser?.displayName ?? undefined;
 
       return token;
     },

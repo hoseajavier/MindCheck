@@ -99,11 +99,9 @@ export default function KuisionerPage() {
         );
       }
 
-      const score = answers.reduce((a, b) => a + b, 0);
-
       const saveRes = await fetch("/api/test-result", {
         method: "POST",
-        body: JSON.stringify({ score, level: label, answers }),
+        body: JSON.stringify({ level: label, answers }),
       });
 
       if (!saveRes.ok) throw new Error("Gagal menyimpan ke database");

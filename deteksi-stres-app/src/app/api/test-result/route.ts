@@ -1,50 +1,56 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { calculateStreak } from "@/lib/streak";
+import { encrypt, decrypt } from "@/lib/encryption";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email)
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: {
+        id: userId,
+      },
     });
 
-    if (!user)
+    if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-    console.log("Data to save:", {
-      userId: user.id,
-      score: body.score,
-      level: body.level,
-      answers: body.answers,
-    });
+    }
 
     const validLevels = ["Rendah", "Sedang", "Tinggi"];
+
     const level = validLevels.includes(body.level)
       ? body.level
       : "Tidak Terdeteksi";
 
+    const encryptedAnswers = encrypt(JSON.stringify(body.answers));
+
     const result = await prisma.testResult.create({
       data: {
-        userId: user.id,
-        score: Number(body.score),
-        level: level,
-        answers: body.answers as any,
+        userId: userId,
+        level,
+        answers: encryptedAnswers,
       },
     });
 
     const lastQuizDate = user.lastQuizDate || new Date(0);
     const currentStreak = user.streak || 0;
+
     const newStreak = calculateStreak(lastQuizDate, currentStreak);
 
     await prisma.user.update({
-      where: { id: user.id },
+      where: {
+        id: userId,
+      },
       data: {
         streak: newStreak,
         lastQuizDate: new Date(),
@@ -54,8 +60,12 @@ export async function POST(req: Request) {
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("DETAIL ERROR BACKEND:", error.message);
+
     return NextResponse.json(
-      { error: "Failed to save", details: error.message },
+      {
+        error: "Failed to save",
+        details: error.message,
+      },
       { status: 500 },
     );
   }
@@ -63,34 +73,31 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email: session.user.email,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json([]);
-    }
+    const userId = session.user.id;
 
     const results = await prisma.testResult.findMany({
       where: {
-        userId: user.id,
+        userId: userId,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json(results);
+    const decryptedResults = results.map((result) => ({
+      ...result,
+      answers: JSON.parse(decrypt(result.answers)),
+    }));
+
+    return NextResponse.json(decryptedResults);
   } catch (error) {
-    console.error(error);
+    console.error("GET Test Result Error:", error);
 
     return NextResponse.json(
       { error: "Internal Server Error" },

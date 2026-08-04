@@ -7,10 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  AlertCircle,
   ArrowLeft,
   CheckCircle2,
-  HeartPulse,
   Activity,
   BarChart3,
   Sliders,
@@ -64,50 +62,42 @@ export default function HasilPage() {
     {
       name: "Gerak Mata (REM)",
       key: "eye_movement",
-      weight: 16.92,
-      desc: "Aktivitas fase tidur REM",
+      weight: 16.99,
     },
     {
       name: "Frekuensi Napas",
       key: "respiration_rate",
-      weight: 14.15,
-      desc: "Siklus pernapasan dada per menit",
+      weight: 15.7,
     },
     {
       name: "Detak Jantung",
       key: "heart_rate",
-      weight: 13.54,
-      desc: "Ritme konstan detak jantung istirahat",
+      weight: 13.71,
     },
     {
       name: "Tingkat Dengkuran",
       key: "snoring_rate",
-      weight: 13.35,
-      desc: "Intensitas getaran suara pernapasan",
+      weight: 12.96,
     },
     {
       name: "Suhu Tubuh",
       key: "body_temperature",
-      weight: 11.85,
-      desc: "Fluktuasi suhu internal basal",
-    },
-    {
-      name: "Kadar Oksigen",
-      key: "blood_oxygen",
-      weight: 11.45,
-      desc: "Saturasi oksigen dalam darah (SpO2)",
+      weight: 12.12,
     },
     {
       name: "Gerak Tubuh",
       key: "limb_movement",
-      weight: 10.96,
-      desc: "Keaktifan motorik tangan dan kaki",
+      weight: 11.29,
+    },
+    {
+      name: "Kadar Oksigen",
+      key: "blood_oxygen",
+      weight: 9.6,
     },
     {
       name: "Durasi Tidur",
       key: "sleeping_hours",
-      weight: 7.78,
-      desc: "Kuantitas waktu tidur malam efektif",
+      weight: 7.59,
     },
   ];
 
@@ -125,7 +115,7 @@ export default function HasilPage() {
     const featureConfigs = [
       {
         key: "SNORING_RATE",
-        name: "Dengkuran",
+        name: "Tingkat Dengkuran",
         min: 45,
         max: 100,
         unit: "dB",
@@ -203,7 +193,6 @@ export default function HasilPage() {
         min: cfg.min,
         max: cfg.max,
         inverse: cfg.inverse,
-        desc: `Analisis parameter ${cfg.name}`,
       };
     });
   }, [answers, questions]);
@@ -216,7 +205,7 @@ export default function HasilPage() {
         text: "text-emerald-800",
         badge: "bg-emerald-100 text-emerald-800",
         emoji: "😊",
-        desc: "Luar biasa! Kondisi psikologis Anda saat ini berada dalam zona stabil dan relaks. Tetap pertahankan rutinitas istirahat dan pola hidup sehat Anda saat ini.",
+        desc: "Kondisi Anda berada dalam rentang stres yang wajar dan masih terkelola dengan baik. Stres dalam kadar ini normal dan bisa membentuk kemampuan menghadapi tantangan sehari-hari. Pertahankan kebiasaan sehat Anda: tidur cukup 7 jam atau lebih dengan jadwal teratur, tetap aktif bergerak, dan jaga pola makan seimbang.",
       };
     }
     if (label === "Sedang") {
@@ -226,7 +215,7 @@ export default function HasilPage() {
         text: "text-amber-800",
         badge: "bg-amber-100 text-amber-800",
         emoji: "😐",
-        desc: "Tubuh Anda mulai mendeteksi adanya tekanan kognitif dan kelelahan fisik. Sangat disarankan untuk mengambil jeda istirahat sejenak dan mengurangi beban aktivitas harian Anda.",
+        desc: "Tubuh Anda mulai menunjukkan tanda tekanan kognitif dan kelelahan fisik. Teknik pernapasan dalam (tarik napas 5 detik, tahan 2 detik, hembuskan 5 detik) dapat membantu menenangkan sistem saraf dan meredakan respons stres tubuh. Ambil jeda sejenak, kurangi beban aktivitas, dan jaga asupan nutrisi seimbang.",
       };
     }
     return {
@@ -235,36 +224,9 @@ export default function HasilPage() {
       text: "text-rose-800",
       badge: "bg-rose-100 text-rose-800",
       emoji: "😟",
-      desc: "Tingkat stres Anda tergolong tinggi. Tubuh Anda sedang memberikan sinyal kelelahan ekstrem atau kecemasan yang kuat. Jangan ragu untuk berbagi cerita atau berkonsultasi dengan profesional jika dirasa semakin membebani.",
+      desc: "Tingkat stres Anda tergolong tinggi dan berpotensi berdampak pada kesehatan fisik maupun emosional dalam jangka panjang. Jika strategi mandiri terasa tidak cukup membantu dan Anda merasa kewalahan, sangat disarankan untuk berkonsultasi dengan psikolog atau tenaga profesional kesehatan mental untuk mendapatkan penanganan yang lebih terarah.",
     };
   }, [label]);
-
-  const importantFactors = useMemo(() => {
-    const findings = [];
-    if (answers[1] >= 3)
-      findings.push(
-        "Pola pernapasan yang cepat atau tidak teratur cukup sering terjadi.",
-      );
-    if (answers[4] >= 3)
-      findings.push(
-        "Terdapat indikasi tubuh sering merasa kekurangan oksigen.",
-      );
-    if (answers[5] >= 3 || answers[6] >= 3 || answers[9] >= 3)
-      findings.push(
-        "Kualitas dan durasi tidur menunjukkan adanya gangguan istirahat.",
-      );
-    if (answers[7] >= 3)
-      findings.push(
-        "Detak jantung cepat saat istirahat menjadi salah satu indikator.",
-      );
-    if (answers[11] >= 3 || answers[12] >= 3 || answers[15] >= 3)
-      findings.push(
-        "Tingkat kecemasan dan ketegangan emosional terlihat cukup tinggi.",
-      );
-    if (answers[13] >= 3 || answers[21] >= 3)
-      findings.push("Tubuh menunjukkan tanda kelelahan dan kurang energi.");
-    return findings;
-  }, [answers]);
 
   if (loading || !result) {
     return (
@@ -323,25 +285,6 @@ export default function HasilPage() {
           <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
         </div>
 
-        <div
-          className={`border rounded-2xl p-5 ${theme.cardBg} flex items-start gap-4`}
-        >
-          <HeartPulse className={`w-6 h-6 shrink-0 mt-0.5 ${theme.text}`} />
-          <div className="space-y-1">
-            <h4 className={`font-bold text-sm ${theme.text}`}>
-              Rekomendasi Penanganan Klinis
-            </h4>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              {label === "Rendah" &&
-                "Pertahankan ritme harianmu. Coba lakukan jalan santai sore atau meditasi ringan 5 menit untuk menjaga kesegaran endorfin tubuh."}
-              {label === "Sedang" &&
-                "Ambil jeda istirahat kerja selama 15-30 menit ke depan. Lakukan peregangan leher, minumlah segelas air putih hangat, dan hindari paparan layar gawai (screen time) sebelum tidur malam ini."}
-              {label === "Tinggi" &&
-                "Sangat disarankan melakukan teknik pernapasan kotak (box breathing) saat ini: Tarik napas 4 detik, tahan 4 detik, embuskan 4 detik, tahan 4 detik. Lakukan 5 kali pengulangan untuk menurunkan kecemasan organ jantung."}
-            </p>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 bg-white rounded-3xl shadow-xs border border-gray-100 p-5 md:p-6 space-y-4">
             <div className="flex items-center gap-2">
@@ -383,9 +326,6 @@ export default function HasilPage() {
                         <h4 className="text-xs font-bold text-gray-700 truncate">
                           {bio.name}
                         </h4>
-                        <p className="text-[10px] text-gray-400 truncate">
-                          {bio.desc}
-                        </p>
                       </div>
 
                       <span
@@ -436,9 +376,6 @@ export default function HasilPage() {
                         <span className="font-bold text-gray-700 flex items-center gap-1">
                           {feat.name}
                         </span>
-                        <span className="text-[9px] text-gray-400 font-medium">
-                          {feat.desc}
-                        </span>
                       </div>
                       <span className="font-mono font-bold text-gray-500 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">
                         {feat.weight}%
@@ -479,31 +416,6 @@ export default function HasilPage() {
 
           {openDetail && (
             <div className="p-5 md:p-6 border-t border-gray-100 bg-slate-50/50 space-y-6">
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-gray-700 flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-amber-500" /> Indikator
-                  Faktor yang Paling Dominan
-                </h4>
-                {importantFactors.length === 0 ? (
-                  <p className="text-xs text-gray-400 italic bg-white p-4 rounded-xl border border-dashed text-center">
-                    Tidak ditemukan anomali atau indikator gejala fisik ekstrem
-                    pada jawaban Anda.
-                  </p>
-                ) : (
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {importantFactors.map((item, index) => (
-                      <div
-                        key={index}
-                        className="bg-white border border-gray-100 shadow-2xs rounded-xl p-3.5 text-xs font-semibold text-gray-600 leading-relaxed flex items-start gap-2"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
               <div className="space-y-3">
                 <h4 className="font-bold text-sm text-gray-700">
                   Daftar Rekaman Jawaban Lengkap

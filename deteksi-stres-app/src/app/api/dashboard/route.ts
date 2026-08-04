@@ -6,44 +6,50 @@ export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
   }
 
   const userId = session.user.id;
 
-  const tests = await prisma.testResult.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
+  const [tests, todayMood, moodHistory] = await Promise.all([
+    prisma.testResult.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    }),
 
-  const lastTest = tests[0] || null;
-
-  const todayStr = new Date().toLocaleDateString("en-CA", {
-    timeZone: "Asia/Jakarta",
-  });
-
-  const todayMoodEntry = await prisma.dailyMood.findUnique({
-    where: {
-      userId_date: {
-        userId,
-        date: todayStr,
+    prisma.dailyMood.findUnique({
+      where: {
+        userId_date: {
+          userId,
+          date: new Date().toLocaleDateString("en-CA", {
+            timeZone: "Asia/Jakarta",
+          }),
+        },
       },
-    },
-  });
+    }),
 
-  const moodHistory = await prisma.dailyMood.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 7,
-  });
+    prisma.dailyMood.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 7,
+    }),
+  ]);
 
   return Response.json({
-    totalTest: tests.length,
-    lastTest,
-    history: tests.slice(0, 3),
+    totalTest: await prisma.testResult.count({
+      where: { userId },
+    }),
 
-    hasFilledMoodToday: !!todayMoodEntry,
-    todayMood: todayMoodEntry ? todayMoodEntry.mood : null,
+    lastTest: tests[0] ?? null,
+    history: tests,
+
+    hasFilledMoodToday: !!todayMood,
+    todayMood: todayMood?.mood ?? null,
+
     moodHistory: moodHistory.reverse(),
   });
 }

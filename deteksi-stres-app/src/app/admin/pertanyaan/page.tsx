@@ -101,18 +101,29 @@ export default function ManageQuestionsPage() {
   }, []);
 
   const handleSave = async () => {
-    const method = modal.type === "edit" ? "PUT" : "POST";
-    const res = await fetch("/api/pertanyaan", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: modal.data?.id, question: text, category }),
-    });
+    const isEdit = modal.type === "edit";
+    const method = isEdit ? "PUT" : "POST";
+    try {
+      const res = await fetch("/api/pertanyaan", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: modal.data?.id, question: text, category }),
+      });
 
-    if (res.ok) {
-      toast.success("Berhasil disimpan!");
+      if (!res.ok) {
+        throw new Error("Gagal menyimpan pertanyaan");
+      }
+      toast.success(
+        isEdit
+          ? "Pertanyaan berhasil diperbarui"
+          : "Pertanyaan berhasil disimpan",
+      );
       setModal({ open: false, type: "add", data: null });
       setText("");
-      fetchData();
+      await fetchData();
+    } catch (error) {
+      console.error("Simpan pertanyaan error:", error);
+      toast.error("Gagal menyimpan pertanyaan");
     }
   };
 
@@ -130,16 +141,34 @@ export default function ManageQuestionsPage() {
     }
   };
 
-  const handleFileChange = async (e: any) => {
-    if (!e.target.files?.[0]) return;
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
     setLoading(true);
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
-    await fetch("/api/pertanyaan", { method: "POST", body: formData });
-    setLoading(false);
-    fetchData();
-    toast.success("CSV Diimport!");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/pertanyaan", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Gagal Import File CSV");
+      }
+      await fetchData();
+      toast.success("CSV Berhasil Diimport!");
+    } catch (error) {
+      console.error("Import CSV Error:", error);
+      toast.error("Gagal Import CSV");
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   return (

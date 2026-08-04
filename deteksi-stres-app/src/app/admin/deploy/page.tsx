@@ -23,11 +23,12 @@ export default function DeployModelPage() {
   }, []);
 
   const handleModelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("file", e.target.files[0]);
+    formData.append("file", file);
 
     try {
       const res = await fetch("/api/deploy", {
