@@ -27,7 +27,23 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
       }
 
-      const dbUser = token.email ? await prisma.user.findUnique ({ where: {email: token.email}, select: {role: true, displayName: true}, }) : null;
+      let dbUser = null;
+
+      try {
+        if (token.email) {
+          dbUser = await prisma.user.findUnique({
+            where: {
+              email: token.email,
+            },
+            select: {
+              role: true,
+              displayName: true,
+            },
+          });
+        }
+      } catch (e) {
+        console.error("Failed to fetch user:", e);
+      }
 
       token.role = dbUser?.role ?? "USER";
       token.displayName = dbUser?.displayName ?? undefined;

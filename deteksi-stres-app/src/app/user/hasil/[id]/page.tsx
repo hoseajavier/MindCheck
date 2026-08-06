@@ -132,9 +132,9 @@ export default function HasilPage() {
       {
         key: "BODY_TEMPERATURE",
         name: "Suhu Tubuh",
-        min: 36,
-        max: 38,
-        unit: "°C",
+        min: 85,
+        max: 99,
+        unit: "°F",
         inverse: false,
       },
       {

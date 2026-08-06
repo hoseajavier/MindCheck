@@ -222,7 +222,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-2xs border border-gray-100 flex flex-col justify-between gap-4">
             <div>
-              <h3 className="font-bold text-base sm:text-lg text-[#2C3E50]">Mood Tracker Harian</h3>
+              <h3 className="font-bold text-base sm:text-lg text-[#2C3E50]">Suasana Hati Anda</h3>
               <p className="text-xs text-gray-400 mt-0.5">Catat suasana hatimu sekali dalam kurun waktu 24 jam.</p>
             </div>
 

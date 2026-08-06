@@ -19,3 +19,13 @@ URL: **[https://mindcheck-phi.vercel.app](https://mindcheck-phi.vercel.app)**
 *   **Machine Learning**: Scikit-Learn (Random Forest)
 *   **Autentikasi**: NextAuth.js
 *   **Deployment**: Vercel & Railway
+
+## Disusun oleh
+Hosea Javier - NPM 140810220033
+
+## Dosen Pembimbing
+**Pembimbing Utama**: Rudi Rosadi, S.Si.,M.Kom.
+**NIP**: 19760723 200812 1 001
+
+**Pembimbing Pendamping**: Dr. Asep Sholahuddin, MT.
+**NIP**: 19670403 199303 1 002
